@@ -45,3 +45,16 @@ ul li a:hover {
   background-color: #111111;
 }
 
+/*
+Game Styling
+*/
+#GameItems {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#b2dcan
+{
+  background-color: black;
+}
+
