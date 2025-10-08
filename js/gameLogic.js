@@ -28,6 +28,9 @@ var world = new b2World(
     true
 );
 
+//World Gravity
+var OnGround = false;
+
 /*
 * World Objects
 */
@@ -39,7 +42,7 @@ var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "ri
 // Dynamic
 var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 385, 140, 30, "car");
 
-var Player = defineNewDynamicCircle(1.0, 0.2, 0.8, 30, 570, 15, "player");
+var Player = defineNewDynamicCircle(1.0, 0.2, 0, 30, 570, 15, "player");
 Player.GetBody().SetFixedRotation(true);
 
 /*
@@ -78,10 +81,26 @@ window.requestAnimationFrame(update);
 */
 var listener = new Box2D.Dynamics.b2ContactListener;
 listener.BeginContact = function (contact) {
-    console.log("Begin Contact:" + contact.GetFixtureA().GetBody().GetUserData());
+    //console.log("Begin Contact:" + contact.GetFixtureA().GetBody().GetUserData());
+    var a = contact.GetFixtureA().GetBody().GetUserData();
+    var b = contact.GetFixtureB().GetBody().GetUserData();
+
+    // Hero touches ground → allow jump
+    if ((a && a.id === "player" && b && b.id === "ground") ||
+        (b && b.id === "player" && a && a.id === "ground")) {
+        OnGround = true;
+    }
 }
 listener.EndContact = function (contact) {
-    console.log("End Contact:" + contact.GetFixtureA().GetBody().GetUserData());
+    //console.log("End Contact:" + contact.GetFixtureA().GetBody().GetUserData());
+    var a = contact.GetFixtureA().GetBody().GetUserData();
+    var b = contact.GetFixtureB().GetBody().GetUserData();
+
+    // Hero leaves ground → disallow jump
+    if ((a && a.id === "player" && b && b.id === "ground") ||
+        (b && b.id === "player" && a && a.id === "ground")) {
+        OnGround = false;
+    }
 }
 listener.PostSolve = function (contact, impulse) {
     var fixa = contact.GetFixtureA().GetBody().GetUserData().id;
@@ -134,6 +153,7 @@ $(document).keyup(function (e) {
 /*
 * Utility Functions & Objects
 */
+// Move Left Function
 function goleft() {
     Player.GetBody().ApplyImpulse(new b2Vec2(-5, 0), Player.GetBody().GetWorldCenter())
     if (Player.GetBody().GetLinearVelocity().x < -10) {
@@ -141,6 +161,7 @@ function goleft() {
     }
 }
 
+// Move Right Function
 function goright() {
     Player.GetBody().ApplyImpulse(new b2Vec2(5, 0), Player.GetBody().GetWorldCenter())
     if (Player.GetBody().GetLinearVelocity().x > 10) {
@@ -148,8 +169,20 @@ function goright() {
     }
 }
 
+// Jump Function
 function dojump() {
-    Player.GetBody().ApplyImpulse(new b2Vec2(0, -4), Player.GetBody().GetWorldCenter())
+    if (OnGround) {   // jump only if touching ground
+        var body = Player.GetBody();
+
+        // optional: clear vertical velocity so jump is consistent
+        var v = body.GetLinearVelocity();
+        v.y = 0;
+        body.SetLinearVelocity(v);
+
+        body.ApplyImpulse(new b2Vec2(0, -10), body.GetWorldCenter());
+        
+    }
+    OnGround = false;  // player is now in air
 }
 
 // Static Object
