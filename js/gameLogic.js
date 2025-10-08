@@ -40,9 +40,9 @@ var leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
 var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
 // Dynamic
-var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 385, 140, 30, "car");
+var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 700, 550, 30, "car");
 
-var Player = defineNewDynamicCircle(1.0, 0.2, 0, 30, 570, 15, "player");
+var Player = defineNewDynamicCircle(1.0, 0.2, 0, 100, 550, 15, "player");
 Player.GetBody().SetFixedRotation(true);
 
 /*
@@ -105,7 +105,7 @@ listener.EndContact = function (contact) {
 listener.PostSolve = function (contact, impulse) {
     var fixa = contact.GetFixtureA().GetBody().GetUserData().id;
     var fixb = contact.GetFixtureB().GetBody().GetUserData().id;
-    console.log(fixa + " hits " + fixb + " with imp: " + impulse.normalImpulses[0]);
+    //console.log(fixa + " hits " + fixb + " with imp: " + impulse.normalImpulses[0]);
 }
 listener.PreSolve = function (contact, oldManifold) {
 }
@@ -114,60 +114,26 @@ this.world.SetContactListener(listener);
 /*
 Keyboard Controls
 */
+// Key Down -> W, Up Arrow, Space
 $(document).keydown(function (e) {
-    if (e.keyCode == 65 || e.keyCode == 37) {
-        console.log("left down");
-        goleft();
-    }
-    if (e.keyCode == 68 || e.keyCode == 39) {
-        console.log("right down");
-        goright();
-    }
-    if (e.keyCode == 87 || e.keyCode == 38) {
-        console.log("up down");
+    if (e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) {
+        console.log("Player Jump");
         dojump();
-    }
-    if (e.keyCode == 83 || e.keyCode == 40) {
-        console.log("down down");
+    } else{
+        console.log("Space: " + e.keyCode);
     }
 });
 
-//Press Up (W,A,S,D)
+// Key Up -> W, Up Arrow, Space
 $(document).keyup(function (e) {
-    if (e.keyCode == 65 || e.keyCode == 37) {
-        console.log("left up");
-
-    }
-    if (e.keyCode == 68 || e.keyCode == 39) {
-        console.log("right up");
-
-    }
-    if (e.keyCode == 87 || e.keyCode == 38) {
-        console.log("up up");
-    }
-    if (e.keyCode == 83 || e.keyCode == 40) {
-        console.log("down up");
-    }
+    if (e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) {
+        console.log("Player Fall");
+    } 
 });
 
 /*
 * Utility Functions & Objects
 */
-// Move Left Function
-function goleft() {
-    Player.GetBody().ApplyImpulse(new b2Vec2(-5, 0), Player.GetBody().GetWorldCenter())
-    if (Player.GetBody().GetLinearVelocity().x < -10) {
-        Player.GetBody().SetLinearVelocity(new b2Vec2(-10, Player.GetBody().GetLinearVelocity().y))
-    }
-}
-
-// Move Right Function
-function goright() {
-    Player.GetBody().ApplyImpulse(new b2Vec2(5, 0), Player.GetBody().GetWorldCenter())
-    if (Player.GetBody().GetLinearVelocity().x > 10) {
-        Player.GetBody().SetLinearVelocity(new b2Vec2(10, Player.GetBody().GetLinearVelocity().y))
-    }
-}
 
 // Jump Function
 function dojump() {
@@ -179,7 +145,7 @@ function dojump() {
         v.y = 0;
         body.SetLinearVelocity(v);
 
-        body.ApplyImpulse(new b2Vec2(0, -10), body.GetWorldCenter());
+        body.ApplyImpulse(new b2Vec2(0, -7), body.GetWorldCenter());
         
     }
     OnGround = false;  // player is now in air
