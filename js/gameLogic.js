@@ -37,7 +37,10 @@ var leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
 var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
 // Dynamic
-var Player = defineNewDynamicCircle(1.0, 0.2, 0.8, 385, 140, 30, "Player");
+var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 385, 140, 30, "car");
+
+var Player = defineNewDynamicCircle(1.0, 0.2, 0.8, 30, 570, 15, "player");
+Player.GetBody().SetFixedRotation(true);
 
 /*
 * Debug Draw
@@ -89,10 +92,65 @@ listener.PreSolve = function (contact, oldManifold) {
 }
 this.world.SetContactListener(listener);
 
+/*
+Keyboard Controls
+*/
+$(document).keydown(function (e) {
+    if (e.keyCode == 65 || e.keyCode == 37) {
+        console.log("left down");
+        goleft();
+    }
+    if (e.keyCode == 68 || e.keyCode == 39) {
+        console.log("right down");
+        goright();
+    }
+    if (e.keyCode == 87 || e.keyCode == 38) {
+        console.log("up down");
+        dojump();
+    }
+    if (e.keyCode == 83 || e.keyCode == 40) {
+        console.log("down down");
+    }
+});
+
+//Press Up (W,A,S,D)
+$(document).keyup(function (e) {
+    if (e.keyCode == 65 || e.keyCode == 37) {
+        console.log("left up");
+
+    }
+    if (e.keyCode == 68 || e.keyCode == 39) {
+        console.log("right up");
+
+    }
+    if (e.keyCode == 87 || e.keyCode == 38) {
+        console.log("up up");
+    }
+    if (e.keyCode == 83 || e.keyCode == 40) {
+        console.log("down up");
+    }
+});
 
 /*
 * Utility Functions & Objects
 */
+function goleft() {
+    Player.GetBody().ApplyImpulse(new b2Vec2(-5, 0), Player.GetBody().GetWorldCenter())
+    if (Player.GetBody().GetLinearVelocity().x < -10) {
+        Player.GetBody().SetLinearVelocity(new b2Vec2(-10, Player.GetBody().GetLinearVelocity().y))
+    }
+}
+
+function goright() {
+    Player.GetBody().ApplyImpulse(new b2Vec2(5, 0), Player.GetBody().GetWorldCenter())
+    if (Player.GetBody().GetLinearVelocity().x > 10) {
+        Player.GetBody().SetLinearVelocity(new b2Vec2(10, Player.GetBody().GetLinearVelocity().y))
+    }
+}
+
+function dojump() {
+    Player.GetBody().ApplyImpulse(new b2Vec2(0, -4), Player.GetBody().GetWorldCenter())
+}
 
 // Static Object
 function defineNewStatic(density, friction, restitution, x, y, width, height, objid) {
