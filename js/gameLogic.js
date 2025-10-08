@@ -30,7 +30,7 @@ var world = new b2World(
 
 //World Variables
 var OnGround = false;
-var CarSpeed = -50; // Car Speed
+var CarSpeed = -10; // Car Speed
 
 /*
 * World Objects
@@ -94,6 +94,15 @@ listener.BeginContact = function (contact) {
         (b && b.id === "player" && a && a.id === "ground")) {
         OnGround = true;
     }
+
+    // Car touches wall → delete car
+    if ((a && a.id === "car" && b && (b.id === "leftwall" || b.id === "rightwall")) ||
+        (b && b.id === "car" && a && (a.id === "leftwall" || a.id === "rightwall"))) {
+        console.log("Car hit a wall, delete it");
+        if (a && a.id === "car") destroylist.push(contact.GetFixtureA().GetBody());
+        if (b && b.id === "car") destroylist.push(contact.GetFixtureB().GetBody());
+    }
+    
 }
 listener.EndContact = function (contact) {
     //console.log("End Contact:" + contact.GetFixtureA().GetBody().GetUserData());
