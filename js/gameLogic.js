@@ -28,8 +28,9 @@ var world = new b2World(
     true
 );
 
-//World Gravity
+//World Variables
 var OnGround = false;
+var CarSpeed = -50; // Car Speed
 
 /*
 * World Objects
@@ -41,6 +42,9 @@ var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "ri
 
 // Dynamic
 var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 700, 550, 30, "car");
+
+//Car Movememt to Player
+Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
 
 var Player = defineNewDynamicCircle(1.0, 0.2, 0, 100, 550, 15, "player");
 Player.GetBody().SetFixedRotation(true);
