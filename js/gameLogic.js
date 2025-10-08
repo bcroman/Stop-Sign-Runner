@@ -30,7 +30,7 @@ var world = new b2World(
 
 //World Variables
 var OnGround = false;
-var CarSpeed = -10; // Car Speed
+var CarSpeed = -9; // Car Speed
 
 /*
 * World Objects
@@ -41,10 +41,13 @@ var leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
 var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
 // Dynamic
-var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 700, 550, 30, "car");
+setInterval(function () {
+    var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 30, "car");
+    console.log("Car has been spawned!");
+    //Car Movememt to Player
+    Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
+}, 2300);
 
-//Car Movememt to Player
-Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
 
 var Player = defineNewDynamicCircle(1.0, 0.2, 0, 100, 550, 15, "player");
 Player.GetBody().SetFixedRotation(true);
