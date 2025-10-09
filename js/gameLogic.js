@@ -99,11 +99,18 @@ listener.BeginContact = function (contact) {
     }
 
     // Car touches wall → delete car
-    if ((a && a.id === "car" && b && (b.id === "leftwall" || b.id === "rightwall")) ||
-        (b && b.id === "car" && a && (a.id === "leftwall" || a.id === "rightwall"))) {
+    if ((a && a.id === "car" && b && b.id === "leftwall" ) ||
+        (b && b.id === "car" && a && a.id === "leftwall" )) {
         console.log("Car hit a wall, delete it");
         if (a && a.id === "car") destroylist.push(contact.GetFixtureA().GetBody());
         if (b && b.id === "car") destroylist.push(contact.GetFixtureB().GetBody());
+    }
+
+    // Hero touches car → Lose Game
+    // Car touches wall → delete car
+    if ((a && a.id === "car" && b && b.id === "player" ) ||
+        (b && b.id === "car" && a && a.id === "player" )) {
+        console.log("Game Over!");
     }
     
 }
