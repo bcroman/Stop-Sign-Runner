@@ -62,6 +62,23 @@ Game Screens
 */
 
 /* Game Over */
+#StartGameScreen {
+  position: relative;
+  margin: auto;
+  width: 400px;
+  height: 400px;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: white;
+  font-family: sans-serif;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+/* Game Over */
 #GameOverScreen {
   position: relative;
   margin: auto;
