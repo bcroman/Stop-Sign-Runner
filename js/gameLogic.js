@@ -228,7 +228,3 @@ function defineNewDynamicCircle(density, friction, restitution, x, y, r, objid) 
 /*
 Game Functions
 */
-
-function startGame() {
-    
-}
