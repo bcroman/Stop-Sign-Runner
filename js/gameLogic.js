@@ -31,6 +31,7 @@ var world = new b2World(
 //World Variables
 var OnGround = false;
 var CarSpeed = -9; // Car Speed
+var animationFrameId;
 
 /*
 * World Objects
@@ -68,20 +69,18 @@ world.SetDebugDraw(debugDraw);
 * Update World Loop
 */
 function update() {
-    world.Step(
-        1 / 60, // framerate
-        10, // velocity iterations
-        10 // position iterations
-    );
+    world.Step(1 / 60, 10, 10);
     world.DrawDebugData();
     world.ClearForces();
+
     for (var i in destroylist) {
         world.DestroyBody(destroylist[i]);
     }
     destroylist.length = 0;
-    window.requestAnimationFrame(update);
+
+    animationFrameId = window.requestAnimationFrame(update);
 }
-window.requestAnimationFrame(update);
+animationFrameId = window.requestAnimationFrame(update);
 
 /*
 * Listeners
@@ -111,7 +110,7 @@ listener.BeginContact = function (contact) {
     if ((a && a.id === "car" && b && b.id === "player" ) ||
         (b && b.id === "car" && a && a.id === "player" )) {
         console.log("Game Over!");
-        location.reload();
+        gameOver();
     }
     
 }
@@ -228,3 +227,13 @@ function defineNewDynamicCircle(density, friction, restitution, x, y, r, objid) 
 /*
 Game Functions
 */
+function gameOver (){
+    document.getElementById("GameOverScreen").style.display = "flex"; //Show
+    ocument.getElementById("b2dcan").style.display = "none"; //Pause Game Play
+    cancelAnimationFrame(animationFrameId);
+}
+
+//Button Functions
+document.getElementById("restartbin").addEventListener("click", function() {
+    location.reload(); //Restart Game
+}); 

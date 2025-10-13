@@ -68,11 +68,12 @@ Game Screens
   width: 400px;
   height: 400px;
   background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   color: white;
   font-family: sans-serif;
+  pointer-events: auto;
   z-index: 10;
 }
