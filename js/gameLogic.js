@@ -111,6 +111,7 @@ listener.BeginContact = function (contact) {
     if ((a && a.id === "car" && b && b.id === "player" ) ||
         (b && b.id === "car" && a && a.id === "player" )) {
         console.log("Game Over!");
+        location.reload();
     }
     
 }
