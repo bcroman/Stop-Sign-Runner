@@ -224,3 +224,11 @@ function defineNewDynamicCircle(density, friction, restitution, x, y, r, objid) 
     thisobj.GetBody().SetUserData({ id: objid })
     return thisobj;
 }
+
+/*
+Game Functions
+*/
+
+function startGame() {
+    
+}

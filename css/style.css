@@ -58,3 +58,15 @@ Game Styling
   background-color: black;
 }
 
+/* Start Game Screen */
+#GameStartSceen {
+  position: absolute;
+  width: 400;
+  height: 400px;
+  background-color: #333333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
