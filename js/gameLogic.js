@@ -33,6 +33,9 @@ var OnGround = false;
 var CarSpeed = -9; // Car Speed
 var animationFrameId;
 
+//start game
+startScreen();
+
 /*
 * World Objects
 */
@@ -227,9 +230,25 @@ function defineNewDynamicCircle(density, friction, restitution, x, y, r, objid) 
 /*
 Game Functions
 */
+//start Screen function
+function startScreen() {
+    document.getElementById("StartGameScreen").style.display = "flex"; 
+    document.getElementById("b2dcan").style.display = "none"; //Pause Game Play
+    cancelAnimationFrame(animationFrameId);
+}
+
+
+//Start Game Functions
+function startgame (){
+    document.getElementById("StartGameScreen").style.display = "none"; 
+    document.getElementById("b2dcan").style.display = "flex"; //Pause Game Play
+    update();
+}
+
+//Game Over Function
 function gameOver (){
     document.getElementById("GameOverScreen").style.display = "flex"; //Show
-    ocument.getElementById("b2dcan").style.display = "none"; //Pause Game Play
+    document.getElementById("b2dcan").style.display = "none"; //Pause Game Play
     cancelAnimationFrame(animationFrameId);
 }
 
@@ -237,3 +256,9 @@ function gameOver (){
 document.getElementById("restartbin").addEventListener("click", function() {
     location.reload(); //Restart Game
 }); 
+
+document.getElementById("startbin").addEventListener("click", function() {
+    startgame(); //start Game
+}); 
+
+
