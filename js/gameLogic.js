@@ -32,6 +32,7 @@ var world = new b2World(
 var OnGround = false;
 var CarSpeed = -9; // Car Speed
 var animationFrameId;
+var score = 0;
 
 /*
 * World Objects
@@ -98,6 +99,12 @@ listener.BeginContact = function (contact) {
     // Car touches wall → delete car
     if ((a && a.id === "car" && b && b.id === "leftwall" ) ||
         (b && b.id === "car" && a && a.id === "leftwall" )) {
+
+        // Add to score (5 points per car dodged) Display updated score
+        score += 1;
+        console.log("Score: " + score);
+        document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;
+
         if (a && a.id === "car") destroylist.push(contact.GetFixtureA().GetBody());
         if (b && b.id === "car") destroylist.push(contact.GetFixtureB().GetBody());
     }
@@ -283,6 +290,10 @@ function startGame() {
         var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 30, "car");
         Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
     }, 2300);
+
+    //Scores
+    score = 0;
+    document.getElementById("scoreDisplay").textContent = "Cars Dodged: 0";
 
     // Hide Game Over, show canvas
     document.getElementById("StartGameScreen").style.display = "none";
