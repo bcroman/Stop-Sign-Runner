@@ -55,6 +55,8 @@ Game Styling
 
 #b2dcan {
   background-color: black;
+  display: block;
+  margin: auto;
 }
 
 /*

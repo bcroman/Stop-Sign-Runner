@@ -33,9 +33,6 @@ var OnGround = false;
 var CarSpeed = -9; // Car Speed
 var animationFrameId;
 
-//start game
-startScreen();
-
 /*
 * World Objects
 */
@@ -230,35 +227,45 @@ function defineNewDynamicCircle(density, friction, restitution, x, y, r, objid) 
 /*
 Game Functions
 */
-//start Screen function
+//Start Screen Function
 function startScreen() {
-    document.getElementById("StartGameScreen").style.display = "flex"; 
-    document.getElementById("b2dcan").style.display = "none"; //Pause Game Play
+    document.getElementById("StartGameScreen").style.display = "flex";
+    document.getElementById("b2dcan").style.display = "none";
     cancelAnimationFrame(animationFrameId);
 }
 
 
 //Start Game Functions
-function startgame (){
-    document.getElementById("StartGameScreen").style.display = "none"; 
-    document.getElementById("b2dcan").style.display = "flex"; //Pause Game Play
-    update();
+function startgame() {
+    document.getElementById("StartGameScreen").style.display = "none";
+    document.getElementById("GameOverScreen").style.display = "none";
+    document.getElementById("b2dcan").style.display = "block";
+    update(); // start game loop
 }
 
 //Game Over Function
-function gameOver (){
-    document.getElementById("GameOverScreen").style.display = "flex"; //Show
-    document.getElementById("b2dcan").style.display = "none"; //Pause Game Play
+function gameOver() {
+    document.getElementById("GameOverScreen").style.display = "flex";
+    document.getElementById("b2dcan").style.display = "none";
     cancelAnimationFrame(animationFrameId);
 }
 
-//Button Functions
-document.getElementById("restartbin").addEventListener("click", function() {
-    location.reload(); //Restart Game
-}); 
+// On Load DOM
+window.addEventListener("DOMContentLoaded", function() {
 
-document.getElementById("startbin").addEventListener("click", function() {
-    startgame(); //start Game
-}); 
+    // Hide everything first
+    document.getElementById("b2dcan").style.display = "none";
+    document.getElementById("GameOverScreen").style.display = "none";
+    document.getElementById("StartGameScreen").style.display = "flex";
 
+    //Button Functions
+    document.getElementById("restartBtn").addEventListener("click", function() {
+        startgame();
+    });
 
+    document.getElementById("startBtn").addEventListener("click", function() {
+        startgame();
+    });
+
+    startScreen(); // Show start screen
+});
