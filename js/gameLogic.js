@@ -33,6 +33,7 @@ var OnGround = false;
 var CarSpeed = -9; // Car Speed
 var animationFrameId;
 var score = 0;
+var highscore;
 
 /*
 * World Objects
@@ -104,6 +105,15 @@ listener.BeginContact = function (contact) {
         score += 1;
         console.log("Score: " + score);
         document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;
+
+        // If player beat their high score
+        if (score > highscore) {
+            highscore = score;
+        }
+
+        document.getElementById("highscoreDisplay").innerText = "High Score: " + score;
+
+        //updateHighScoreDisplays()
 
         if (a && a.id === "car") destroylist.push(contact.GetFixtureA().GetBody());
         if (b && b.id === "car") destroylist.push(contact.GetFixtureB().GetBody());
@@ -240,7 +250,9 @@ function startScreen() {
 //Game Over Screen Function
 function overScreen() {
     document.getElementById("finalScoreDisplay").textContent = "Cars Dodged: " + score;
+    document.getElementById("finalHighscoreDisplay").innerText = "High Score: " + score;
     document.getElementById("scoreDisplay").textContent = "";
+
     document.getElementById("GameOverScreen").style.display = "flex";
     document.getElementById("b2dcan").style.display = "none";
     cancelAnimationFrame(animationFrameId);
@@ -277,7 +289,7 @@ function startGame() {
     }
 
     // Clear destruction list
-    destroylist.length = 0;  
+    destroylist.length = 0;
 
     // Recreate Objects
     ground = defineNewStatic(1.0, 0.5, 0.2, (WIDTH / 2), HEIGHT, (WIDTH / 2), 5, "ground");
