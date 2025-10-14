@@ -42,13 +42,11 @@ var leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
 var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
 // Dynamic
-setInterval(function () {
+var carSpawner = setInterval(function () {
     var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 30, "car");
-    console.log("Car has been spawned!");
-    //Car Movememt to Player
     Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
+    //console.log("Car Spawned");
 }, 2300);
-
 
 var Player = defineNewDynamicCircle(1.0, 0.2, 0, 100, 550, 15, "player");
 Player.GetBody().SetFixedRotation(true);
@@ -100,7 +98,6 @@ listener.BeginContact = function (contact) {
     // Car touches wall → delete car
     if ((a && a.id === "car" && b && b.id === "leftwall" ) ||
         (b && b.id === "car" && a && a.id === "leftwall" )) {
-        console.log("Car hit a wall, delete it");
         if (a && a.id === "car") destroylist.push(contact.GetFixtureA().GetBody());
         if (b && b.id === "car") destroylist.push(contact.GetFixtureB().GetBody());
     }
@@ -109,8 +106,8 @@ listener.BeginContact = function (contact) {
     // Car touches wall → delete car
     if ((a && a.id === "car" && b && b.id === "player" ) ||
         (b && b.id === "car" && a && a.id === "player" )) {
-        console.log("Game Over!");
-        gameOver();
+        //console.log("Game Over!");
+        overScreen()
     }
     
 }
@@ -140,17 +137,15 @@ Keyboard Controls
 // Key Down -> W, Up Arrow, Space
 $(document).keydown(function (e) {
     if (e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) {
-        console.log("Player Jump");
-        dojump();
-    } else{
-        console.log("Space: " + e.keyCode);
+        //console.log("Player Jump");
+        dojump(); //Call Jump Function
     }
 });
 
 // Key Up -> W, Up Arrow, Space
 $(document).keyup(function (e) {
     if (e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) {
-        console.log("Player Fall");
+        //console.log("Player Fall");
     } 
 });
 
@@ -234,17 +229,8 @@ function startScreen() {
     cancelAnimationFrame(animationFrameId);
 }
 
-
-//Start Game Functions
-function startgame() {
-    document.getElementById("StartGameScreen").style.display = "none";
-    document.getElementById("GameOverScreen").style.display = "none";
-    document.getElementById("b2dcan").style.display = "block";
-    update(); // start game loop
-}
-
-//Game Over Function
-function gameOver() {
+//Game Over Screen Function
+function overScreen() {
     document.getElementById("GameOverScreen").style.display = "flex";
     document.getElementById("b2dcan").style.display = "none";
     cancelAnimationFrame(animationFrameId);
@@ -260,12 +246,48 @@ window.addEventListener("DOMContentLoaded", function() {
 
     //Button Functions
     document.getElementById("restartBtn").addEventListener("click", function() {
-        startgame();
+        startGame();
     });
 
     document.getElementById("startBtn").addEventListener("click", function() {
-        startgame();
+        startGame();
     });
 
     startScreen(); // Show start screen
 });
+
+// Reset Game Function
+function startGame() {
+    // Stop the animation loop
+    cancelAnimationFrame(animationFrameId);
+
+    //Distory All Bodies
+    for (var body = world.GetBodyList(); body; body = body.GetNext()) {
+        world.DestroyBody(body);
+    }
+
+    // Clear destruction list
+    destroylist.length = 0;  
+
+    // Recreate Objects
+    ground = defineNewStatic(1.0, 0.5, 0.2, (WIDTH / 2), HEIGHT, (WIDTH / 2), 5, "ground");
+    leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
+    rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
+
+    Player = defineNewDynamicCircle(1.0, 0.2, 0, 100, 550, 15, "player");
+    Player.GetBody().SetFixedRotation(true);
+
+    // Restart the car spawner
+    clearInterval(carSpawner);
+    carSpawner = setInterval(function () {
+        var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 30, "car");
+        Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
+    }, 2300);
+
+    // Hide Game Over, show canvas
+    document.getElementById("StartGameScreen").style.display = "none";
+    document.getElementById("GameOverScreen").style.display = "none";
+    document.getElementById("b2dcan").style.display = "block";
+
+    update(); // Restart game loop
+}
