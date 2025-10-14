@@ -33,7 +33,7 @@ var OnGround = false;
 var CarSpeed = -9; // Car Speed
 var animationFrameId;
 var score = 0;
-var highscore;
+var highscore = parseInt(localStorage.getItem('Highscore'), 10) || 0; // Get High Score from Local Storage or set to 0
 
 /*
 * World Objects
@@ -106,14 +106,10 @@ listener.BeginContact = function (contact) {
         console.log("Score: " + score);
         document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;
 
-        // If player beat their high score
-        if (score > highscore) {
-            highscore = score;
-        }
+        updateHighScore(); //Call High Score Update Function
 
-        document.getElementById("highscoreDisplay").innerText = "High Score: " + score;
-
-        //updateHighScoreDisplays()
+        // Update High Score Displays
+        document.getElementById("highscoreDisplay").innerText = "High Score: " + highscore;
 
         if (a && a.id === "car") destroylist.push(contact.GetFixtureA().GetBody());
         if (b && b.id === "car") destroylist.push(contact.GetFixtureB().GetBody());
@@ -250,7 +246,7 @@ function startScreen() {
 //Game Over Screen Function
 function overScreen() {
     document.getElementById("finalScoreDisplay").textContent = "Cars Dodged: " + score;
-    document.getElementById("finalHighscoreDisplay").innerText = "High Score: " + score;
+    document.getElementById("finalHighscoreDisplay").innerText = "High Score: " + highscore;
     document.getElementById("scoreDisplay").textContent = "";
 
     document.getElementById("GameOverScreen").style.display = "flex";
@@ -265,6 +261,7 @@ window.addEventListener("DOMContentLoaded", function() {
     document.getElementById("b2dcan").style.display = "none";
     document.getElementById("GameOverScreen").style.display = "none";
     document.getElementById("StartGameScreen").style.display = "flex";
+    document.getElementById("highscoreDisplay").innerText = "High Score: " + highscore;
 
     //Button Functions
     document.getElementById("restartBtn").addEventListener("click", function() {
@@ -319,4 +316,12 @@ function startGame() {
     document.getElementById("finalScoreDisplay").textContent = "";
 
     update(); // Restart game loop
+}
+
+//Update High Score Value Function
+function updateHighScore() {
+    if (score > highscore) {
+        highscore = score;
+        localStorage.setItem('Highscore', String(highscore)); // Update Local Storage
+    }
 }
