@@ -231,6 +231,7 @@ Game Functions
 */
 //Start Screen Function
 function startScreen() {
+    document.getElementById("scoreDisplay").textContent = "";
     document.getElementById("StartGameScreen").style.display = "flex";
     document.getElementById("b2dcan").style.display = "none";
     cancelAnimationFrame(animationFrameId);
@@ -238,6 +239,8 @@ function startScreen() {
 
 //Game Over Screen Function
 function overScreen() {
+    document.getElementById("finalScoreDisplay").textContent = "Cars Dodged: " + score;
+    document.getElementById("scoreDisplay").textContent = "";
     document.getElementById("GameOverScreen").style.display = "flex";
     document.getElementById("b2dcan").style.display = "none";
     cancelAnimationFrame(animationFrameId);
@@ -293,12 +296,15 @@ function startGame() {
 
     //Scores
     score = 0;
-    document.getElementById("scoreDisplay").textContent = "Cars Dodged: 0";
 
     // Hide Game Over, show canvas
     document.getElementById("StartGameScreen").style.display = "none";
     document.getElementById("GameOverScreen").style.display = "none";
     document.getElementById("b2dcan").style.display = "block";
+
+    // Reset Score Display
+    document.getElementById("scoreDisplay").textContent = "Cars Dodged: 0";
+    document.getElementById("finalScoreDisplay").textContent = "";
 
     update(); // Restart game loop
 }
