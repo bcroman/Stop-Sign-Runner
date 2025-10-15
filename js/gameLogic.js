@@ -39,9 +39,9 @@ var gameOverText = "";
 // Differrcult Values
 var difficultly = "easy";
 var difficultySettings = {
-    easy:   { carSpeed: -5, spawnRate: 2500 },
+    easy:   { carSpeed: -7, spawnRate: 2500 },
     medium: { carSpeed: -10, spawnRate: 2000 },
-    hard:   { carSpeed: -15, spawnRate: 1500 },
+    hard:   { carSpeed: -13, spawnRate: 1500 },
     veryHard: { carSpeed: -20, spawnRate: 1000 }
 };
 
@@ -60,7 +60,7 @@ var carSpawner = setInterval(function () {
     //console.log("Car Spawned");
 }, 2500);
 
-var Player = defineNewDynamicCircle(1.0, 0.2, 0, 100, 550, 15, "player");
+var Player = defineNewDynamicCircle(0.0, 0, 0, 100, 550, 15, "player");
 Player.GetBody().SetFixedRotation(true);
 
 /*
@@ -112,9 +112,12 @@ listener.BeginContact = function (contact) {
         (b && b.id === "car" && a && a.id === "leftwall" )) {
 
         // Add to score (5 points per car dodged) Display updated score
-        score += 1;
+        score += 5;
         console.log("Score: " + score);
         document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;
+
+        // update difficulty based on score 
+        updateDifficulty();
 
         updateHighScore(); //Call High Score Update Function
 
@@ -317,6 +320,9 @@ function startGame() {
     //Scores
     score = 0;
 
+    difficulty = "easy";
+    applyDifficultySettings();
+
     // Hide Game Over, show canvas
     document.getElementById("StartGameScreen").style.display = "none";
     document.getElementById("GameOverScreen").style.display = "none";
@@ -341,5 +347,40 @@ function updateHighScore() {
     }
 }
 
+// Change Differicutly Function
+function updateDifficulty() {
+    let newDifficulty = difficulty;
 
+    if (score >= 30) {
+        newDifficulty = "veryHard";
+    } else if (score >= 20) {
+        newDifficulty = "hard";
+    } else if (score >= 10) {
+        newDifficulty = "medium";
+    } else {
+        newDifficulty = "easy";
+    }
 
+    // Only change if the difficulty tier is different
+    if (newDifficulty !== difficulty) {
+        difficulty = newDifficulty;
+        applyDifficultySettings();
+    }
+}
+
+//Update Game Changes
+function applyDifficultySettings() {
+    // Update global speed
+    CarSpeed = difficultySettings[difficulty].carSpeed;
+
+    // Reset car spawn interval
+    clearInterval(carSpawner);
+    carSpawner = setInterval(function () {
+        var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 30, "car");
+        Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
+    }, difficultySettings[difficulty].spawnRate);
+
+    console.log("Difficulty changed to:", difficulty);
+    document.getElementById("difficultyDisplay").textContent =
+        "Difficulty: " + difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+}
