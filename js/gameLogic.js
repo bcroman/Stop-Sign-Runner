@@ -30,11 +30,20 @@ var world = new b2World(
 
 //World Variables
 var OnGround = false;
-var CarSpeed = -9; // Car Speed
+var CarSpeed = -5; // Car Speed
 var animationFrameId;
 var score = 0;
 var highscore = parseInt(localStorage.getItem('Highscore'), 10) || 0; // Get High Score from Local Storage or set to 0
 var gameOverText = "";
+
+// Differrcult Values
+var difficultly = "easy";
+var difficultySettings = {
+    easy:   { carSpeed: -5, spawnRate: 2500 },
+    medium: { carSpeed: -10, spawnRate: 2000 },
+    hard:   { carSpeed: -15, spawnRate: 1500 },
+    veryHard: { carSpeed: -20, spawnRate: 1000 }
+};
 
 /*
 * World Objects
@@ -49,7 +58,7 @@ var carSpawner = setInterval(function () {
     var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 30, "car");
     Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
     //console.log("Car Spawned");
-}, 2300);
+}, 2500);
 
 var Player = defineNewDynamicCircle(1.0, 0.2, 0, 100, 550, 15, "player");
 Player.GetBody().SetFixedRotation(true);
@@ -177,7 +186,7 @@ function dojump() {
         v.y = 0;
         body.SetLinearVelocity(v);
 
-        body.ApplyImpulse(new b2Vec2(0, -7), body.GetWorldCenter());
+        body.ApplyImpulse(new b2Vec2(0, -6), body.GetWorldCenter());
         
     }
     OnGround = false;  // player is now in air
@@ -331,3 +340,6 @@ function updateHighScore() {
         gameOverText = "Try Again to Beat the High Score!"; // Reset Game Over Text
     }
 }
+
+
+
