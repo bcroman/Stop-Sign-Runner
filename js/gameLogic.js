@@ -39,10 +39,12 @@ var gameOverText = "";
 // Differrcult Values
 var difficultly = "easy";
 var difficultySettings = {
-    easy:   { carSpeed: -7, spawnRate: 2500 },
-    medium: { carSpeed: -10, spawnRate: 2000 },
-    hard:   { carSpeed: -13, spawnRate: 1500 },
-    veryHard: { carSpeed: -20, spawnRate: 1000 }
+    easy:   { carSpeed: -6, spawnRate: 3000 },
+    medium: { carSpeed: -8, spawnRate: 2600 },
+    hard:   { carSpeed: -10, spawnRate: 2000 },
+    possible: { carSpeed: -12, spawnRate: 1400 },
+    impossible: { carSpeed: -14, spawnRate: 1000}
+
 };
 
 /*
@@ -351,8 +353,10 @@ function updateHighScore() {
 function updateDifficulty() {
     let newDifficulty = difficulty;
 
-    if (score >= 30) {
-        newDifficulty = "veryHard";
+    if (score >= 40) {
+        newDifficulty = "impossible";
+    } else if (score >= 30) {
+        newDifficulty = "possible";
     } else if (score >= 20) {
         newDifficulty = "hard";
     } else if (score >= 10) {
