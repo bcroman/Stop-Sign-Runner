@@ -28,6 +28,24 @@ var world = new b2World(
     true
 );
 
+// Graphics Setup
+const canvas = document.getElementById("b2dcan");
+const ctx = canvas.getContext("2d");
+
+// Load images
+const images = {
+    player: new Image(),
+    car: new Image(),
+    ground: new Image(),
+    background: new Image()
+};
+
+// Set image sources
+images.player.src = "assets/Player.png";
+images.car.src = "assets/Car.png";
+images.ground.src = "assets/Ground.png";
+images.background.src = "assets/Background.png";
+
 //World Variables
 var OnGround = false;
 var CarSpeed = -5; // Car Speed
@@ -57,7 +75,7 @@ var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "ri
 
 // Dynamic
 var carSpawner = setInterval(function () {
-    var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 30, "car");
+    var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 200, "car");
     Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
     //console.log("Car Spawned");
 }, 2500);
@@ -75,15 +93,49 @@ debugDraw.SetDrawScale(SCALE);
 debugDraw.SetFillAlpha(0.3);
 debugDraw.SetLineThickness(1.0);
 debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-world.SetDebugDraw(debugDraw);
+//world.SetDebugDraw(debugDraw);
 
 /*
 * Update World Loop
 */
 function update() {
     world.Step(1 / 60, 10, 10);
-    world.DrawDebugData();
+    //world.DrawDebugData();
     world.ClearForces();
+
+    // DRAW SECTION
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+    // Draw background
+    if (images.background.complete) {
+        ctx.drawImage(images.background, 0, 0, WIDTH, HEIGHT);
+    } else {
+        ctx.fillStyle = "#87ceeb";
+        ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    }
+
+    // Draw all Box2D bodies with sprites
+    for (let body = world.GetBodyList(); body; body = body.GetNext()) {
+        const userData = body.GetUserData();
+        if (!userData) continue;
+
+        const pos = body.GetPosition();
+        const angle = body.GetAngle();
+        const x = pos.x * SCALE;
+        const y = pos.y * SCALE;
+
+        switch (userData.id) {
+            case "player":
+                drawImageCentered(images.player, x, y, 64, 64, angle);
+                break;
+            case "car":
+                drawImageCentered(images.car, x, y, 192, 96, angle);
+                break;
+            // case "ground":
+            //     ctx.drawImage(images.ground, 0, HEIGHT - 50, WIDTH, 50);
+            //     break;
+        }
+    }
 
     for (var i in destroylist) {
         world.DestroyBody(destroylist[i]);
@@ -109,6 +161,16 @@ function update() {
 
 }
 animationFrameId = window.requestAnimationFrame(update);
+
+// Helper function for drawing centered images
+function drawImageCentered(img, x, y, w, h, angle) {
+    if (!img.complete) return;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.drawImage(img, -w / 2, -h / 2, w, h);
+    ctx.restore();
+}
 
 /*
 * Listeners
@@ -202,7 +264,7 @@ $(document).keyup(function (e) {
 // Variables for jump hold mechanic
 let jumpPressed = false;
 let jumpStartTime = 0;
-let jumpHeight = -7;
+let jumpHeight = -7.5;
 const maxHoldTime = 120; // milliseconds player can hold for higher jump
 const jumpBoost = -2.5;  // extra upward velocity if held briefly
 
