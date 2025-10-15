@@ -34,6 +34,7 @@ var CarSpeed = -9; // Car Speed
 var animationFrameId;
 var score = 0;
 var highscore = parseInt(localStorage.getItem('Highscore'), 10) || 0; // Get High Score from Local Storage or set to 0
+var gameOverText = "";
 
 /*
 * World Objects
@@ -245,6 +246,7 @@ function startScreen() {
 
 //Game Over Screen Function
 function overScreen() {
+    document.getElementById("gameOverTxt").textContent = gameOverText;
     document.getElementById("finalScoreDisplay").textContent = "Cars Dodged: " + score;
     document.getElementById("finalHighscoreDisplay").innerText = "High Score: " + highscore;
     document.getElementById("scoreDisplay").textContent = "";
@@ -320,8 +322,12 @@ function startGame() {
 
 //Update High Score Value Function
 function updateHighScore() {
+    // Check if current score is greater than highscore
     if (score > highscore) {
-        highscore = score;
+        highscore = score;  // Update High Score Variable
+        gameOverText = "New High Score!"; // PR Score Message
         localStorage.setItem('Highscore', String(highscore)); // Update Local Storage
+    } else {
+        gameOverText = "Try Again to Beat the High Score!"; // Reset Game Over Text
     }
 }
