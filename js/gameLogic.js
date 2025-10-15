@@ -24,7 +24,7 @@ var WIDTH = 800;
 var HEIGHT = 600;
 var SCALE = 30;
 var world = new b2World(
-    new b2Vec2(0, 9.81),
+    new b2Vec2(0, 10),
     true
 );
 
@@ -43,7 +43,7 @@ var difficultySettings = {
     medium: { carSpeed: -8, spawnRate: 2600 },
     hard:   { carSpeed: -10, spawnRate: 2000 },
     possible: { carSpeed: -12, spawnRate: 1400 },
-    impossible: { carSpeed: -14, spawnRate: 1000}
+    impossible: { carSpeed: -14, spawnRate: 1200}
 
 };
 
@@ -51,7 +51,7 @@ var difficultySettings = {
 * World Objects
 */
 // Static
-var ground = defineNewStatic(1.0, 0.5, 0.2, (WIDTH / 2), HEIGHT, (WIDTH / 2), 5, "ground");
+var ground = defineNewStatic(0.1, 0, 0, (WIDTH / 2), HEIGHT, (WIDTH / 2), 5, "ground");
 var leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
 var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
@@ -91,6 +91,22 @@ function update() {
     destroylist.length = 0;
 
     animationFrameId = window.requestAnimationFrame(update);
+
+    // Allow slightly higher jump if player still holding key
+    if (jumpPressed && (Date.now() - jumpStartTime) < maxHoldTime) {
+        const body = Player.GetBody();
+        const vel = body.GetLinearVelocity();
+        if (vel.y < 0) { // still moving upward
+            body.ApplyForce(new b2Vec2(0, jumpBoost), body.GetWorldCenter());
+        }
+    }
+
+    const vel = Player.GetBody().GetLinearVelocity();
+    if (vel.y > 0) { // falling
+        // apply extra gravity force to make descent faster
+        Player.GetBody().ApplyForce(new b2Vec2(0, 30), Player.GetBody().GetWorldCenter());
+    }
+
 }
 animationFrameId = window.requestAnimationFrame(update);
 
@@ -107,14 +123,15 @@ listener.BeginContact = function (contact) {
     if ((a && a.id === "player" && b && b.id === "ground") ||
         (b && b.id === "player" && a && a.id === "ground")) {
         OnGround = true;
+        jumpPressed = false;
     }
 
     // Car touches wall → delete car
     if ((a && a.id === "car" && b && b.id === "leftwall" ) ||
         (b && b.id === "car" && a && a.id === "leftwall" )) {
 
-        // Add to score (5 points per car dodged) Display updated score
-        score += 5;
+        // Add to score (2 points per car dodged) Display updated score
+        score += 2;
         console.log("Score: " + score);
         document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;
 
@@ -164,7 +181,7 @@ Keyboard Controls
 */
 // Key Down -> W, Up Arrow, Space
 $(document).keydown(function (e) {
-    if (e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) {
+    if ((e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) && OnGround) {
         //console.log("Player Jump");
         dojump(); //Call Jump Function
     }
@@ -174,27 +191,37 @@ $(document).keydown(function (e) {
 $(document).keyup(function (e) {
     if (e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) {
         //console.log("Player Fall");
+        jumpPressed = false; // Stop jump hold mechanic
     } 
 });
 
 /*
 * Utility Functions & Objects
 */
-
 // Jump Function
-function dojump() {
-    if (OnGround) {   // jump only if touching ground
-        var body = Player.GetBody();
+// Variables for jump hold mechanic
+let jumpPressed = false;
+let jumpStartTime = 0;
+let jumpHeight = -7;
+const maxHoldTime = 120; // milliseconds player can hold for higher jump
+const jumpBoost = -2.5;  // extra upward velocity if held briefly
 
-        // optional: clear vertical velocity so jump is consistent
-        var v = body.GetLinearVelocity();
+function dojump() {
+    if (OnGround) {
+        const body = Player.GetBody();
+
+        // Reset vertical velocity before jumping (for consistency)
+        const v = body.GetLinearVelocity();
         v.y = 0;
         body.SetLinearVelocity(v);
 
-        body.ApplyImpulse(new b2Vec2(0, -6), body.GetWorldCenter());
-        
+        // Set upward velocity directly
+        body.SetLinearVelocity(new b2Vec2(v.x, jumpHeight)); // initial jump burst
+
+        OnGround = false;
+        jumpPressed = true;
+        jumpStartTime = Date.now();
     }
-    OnGround = false;  // player is now in air
 }
 
 // Static Object
@@ -305,7 +332,7 @@ function startGame() {
     destroylist.length = 0;
 
     // Recreate Objects
-    ground = defineNewStatic(1.0, 0.5, 0.2, (WIDTH / 2), HEIGHT, (WIDTH / 2), 5, "ground");
+    ground = defineNewStatic(1.0, 0, 0, (WIDTH / 2), HEIGHT, (WIDTH / 2), 5, "ground");
     leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
     rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
@@ -322,6 +349,7 @@ function startGame() {
     //Scores
     score = 0;
 
+    // Reset Difficulty
     difficulty = "easy";
     applyDifficultySettings();
 
