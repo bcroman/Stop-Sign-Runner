@@ -126,10 +126,10 @@ function update() {
 
         switch (userData.id) {
             case "player":
-                drawImageCentered(images.player, x, y, 64, 64, angle);
+                drawImageCentered(images.player, x, y, 100, 100, angle);
                 break;
             case "car":
-                drawImageCentered(images.car, x, y, 192, 96, angle);
+                drawImageCentered(images.car, x, y, 150, 100, angle);
                 break;
             // case "ground":
             //     ctx.drawImage(images.ground, 0, HEIGHT - 50, WIDTH, 50);
