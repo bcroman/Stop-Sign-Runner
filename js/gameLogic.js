@@ -75,12 +75,12 @@ var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "ri
 
 // Dynamic
 var carSpawner = setInterval(function () {
-    var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 540, 30, "car");
+    Car = defineNewDynamic(1.0, 0.2, 0.8, 750, 540, 75, 30, "car");
     Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
     //console.log("Car Spawned");
 }, 3000);
 
-var Player = defineNewDynamicCircle(0.0, 0, 0, 100, 540, 15, "player");
+var Player = defineNewDynamicCircle(0.0, 0, 0, 150, 540, 15, "player");
 Player.GetBody().SetFixedRotation(true);
 
 /*
@@ -192,8 +192,8 @@ listener.BeginContact = function (contact) {
     if ((a && a.id === "car" && b && b.id === "leftwall" ) ||
         (b && b.id === "car" && a && a.id === "leftwall" )) {
 
-        // Add to score (2 points per car dodged) Display updated score
-        score += 2;
+        // Add to score (1 points per car dodged) Display updated score
+        score += 1;
         console.log("Score: " + score);
         document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;
 
@@ -264,7 +264,7 @@ $(document).keyup(function (e) {
 // Variables for jump hold mechanic
 let jumpPressed = false;
 let jumpStartTime = 0;
-let jumpHeight = -7.5;
+let jumpHeight = -9.2;
 const maxHoldTime = 120; // milliseconds player can hold for higher jump
 const jumpBoost = -2.5;  // extra upward velocity if held briefly
 
@@ -398,13 +398,13 @@ function startGame() {
     leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
     rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
-    Player = defineNewDynamicCircle(0.0, 0, 0, 100, 540, 15, "player");
+    Player = defineNewDynamicCircle(0.0, 0, 0, 150, 540, 15, "player");
     Player.GetBody().SetFixedRotation(true);
     
     // Restart the car spawner
     clearInterval(carSpawner);
     carSpawner = setInterval(function () {
-        Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 540, 30, "car");
+        Car = defineNewDynamic(1.0, 0.2, 0.8, 750, 540, 75, 30, "car");
         Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
     }, 2300);
 
@@ -470,7 +470,7 @@ function applyDifficultySettings() {
     // Reset car spawn interval
     clearInterval(carSpawner);
     carSpawner = setInterval(function () {
-        var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 540, 30, "car");
+        Car = defineNewDynamic(1.0, 0.2, 0.8, 750, 540, 75, 30, "car");
         Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
     }, difficultySettings[difficulty].spawnRate);
 
