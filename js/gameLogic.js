@@ -31,6 +31,7 @@ var world = new b2World(
 // Graphics Setup
 const canvas = document.getElementById("b2dcan");
 const ctx = canvas.getContext("2d");
+var showDebug = false; // Debug Draw Toggle
 
 // Load images
 const images = {
@@ -93,47 +94,53 @@ debugDraw.SetDrawScale(SCALE);
 debugDraw.SetFillAlpha(0.3);
 debugDraw.SetLineThickness(1.0);
 debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-//world.SetDebugDraw(debugDraw);
+world.SetDebugDraw(debugDraw);
 
 /*
 * Update World Loop
 */
 function update() {
     world.Step(1 / 60, 10, 10);
-    //world.DrawDebugData();
+    
     world.ClearForces();
 
     // DRAW SECTION
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-    // Draw background
-    if (images.background.complete) {
-        ctx.drawImage(images.background, 0, 0, WIDTH, HEIGHT);
-    } else {
-        ctx.fillStyle = "#87ceeb";
-        ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    if (showDebug) {
+        world.DrawDebugData();
     }
+    else {
 
-    // Draw all Box2D bodies with sprites
-    for (let body = world.GetBodyList(); body; body = body.GetNext()) {
-        const userData = body.GetUserData();
-        if (!userData) continue;
+        // Draw background
+        if (images.background.complete) {
+            ctx.drawImage(images.background, 0, 0, WIDTH, HEIGHT);
+        } else {
+            ctx.fillStyle = "#87ceeb";
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+        }
 
-        const pos = body.GetPosition();
-        const angle = body.GetAngle();
-        const x = pos.x * SCALE;
-        const y = pos.y * SCALE;
+        // Draw all Box2D bodies with sprites
+        for (let body = world.GetBodyList(); body; body = body.GetNext()) {
+            const userData = body.GetUserData();
+            if (!userData) continue;
 
-        switch (userData.id) {
-            case "player":
-                drawImageCentered(images.player, x, y, 100, 100, angle);
-                break;
-            case "car":
-                drawImageCentered(images.car, x, y, 150, 100, angle);
-                break;
-            case "ground":
-                 ctx.drawImage(images.ground, 0, HEIGHT, WIDTH, 50);
-                 break;
+            const pos = body.GetPosition();
+            const angle = body.GetAngle();
+            const x = pos.x * SCALE;
+            const y = pos.y * SCALE;
+
+            switch (userData.id) {
+                case "player":
+                    drawImageCentered(images.player, x, y, 100, 100, angle);
+                    break;
+                case "car":
+                    drawImageCentered(images.car, x, y, 150, 100, angle);
+                    break;
+                case "ground":
+                    ctx.drawImage(images.ground, 0, HEIGHT, WIDTH, 50);
+                    break;
+            }
         }
     }
 
@@ -246,6 +253,10 @@ $(document).keydown(function (e) {
     if ((e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) && OnGround) {
         //console.log("Player Jump");
         dojump(); //Call Jump Function
+    }
+    if (e.keyCode === 68) { // D key
+        showDebug = !showDebug;
+        console.log("Debug mode:", showDebug ? "ON" : "OFF");
     }
 });
 
