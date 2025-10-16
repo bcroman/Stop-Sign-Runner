@@ -48,7 +48,7 @@ images.background.src = "assets/Background.png";
 
 //World Variables
 var OnGround = false;
-var CarSpeed = -5; // Car Speed
+var CarSpeed = -6; // Car Speed
 var animationFrameId;
 var score = 0;
 var highscore = parseInt(localStorage.getItem('Highscore'), 10) || 0; // Get High Score from Local Storage or set to 0
@@ -69,18 +69,18 @@ var difficultySettings = {
 * World Objects
 */
 // Static
-var ground = defineNewStatic(0.1, 0, 0, (WIDTH / 2), HEIGHT, (WIDTH / 2), 5, "ground");
+var ground = defineNewStatic(0.1, 0, 0, (WIDTH / 2), HEIGHT - 15, (WIDTH / 2), 5, "ground");
 var leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
 var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
 // Dynamic
 var carSpawner = setInterval(function () {
-    var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 200, "car");
+    var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 540, 30, "car");
     Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
     //console.log("Car Spawned");
-}, 2500);
+}, 3000);
 
-var Player = defineNewDynamicCircle(0.0, 0, 0, 100, 550, 15, "player");
+var Player = defineNewDynamicCircle(0.0, 0, 0, 100, 540, 15, "player");
 Player.GetBody().SetFixedRotation(true);
 
 /*
@@ -131,9 +131,9 @@ function update() {
             case "car":
                 drawImageCentered(images.car, x, y, 150, 100, angle);
                 break;
-            // case "ground":
-            //     ctx.drawImage(images.ground, 0, HEIGHT - 50, WIDTH, 50);
-            //     break;
+            case "ground":
+                 ctx.drawImage(images.ground, 0, HEIGHT, WIDTH, 50);
+                 break;
         }
     }
 
@@ -394,17 +394,17 @@ function startGame() {
     destroylist.length = 0;
 
     // Recreate Objects
-    ground = defineNewStatic(1.0, 0, 0, (WIDTH / 2), HEIGHT, (WIDTH / 2), 5, "ground");
+    ground = defineNewStatic(0.1, 0, 0, (WIDTH / 2), HEIGHT - 15, (WIDTH / 2), 5, "ground");
     leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
     rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
-    Player = defineNewDynamicCircle(1.0, 0.2, 0, 100, 550, 15, "player");
+    Player = defineNewDynamicCircle(0.0, 0, 0, 100, 540, 15, "player");
     Player.GetBody().SetFixedRotation(true);
-
+    
     // Restart the car spawner
     clearInterval(carSpawner);
     carSpawner = setInterval(function () {
-        var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 30, "car");
+        Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 540, 30, "car");
         Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
     }, 2300);
 
@@ -470,7 +470,7 @@ function applyDifficultySettings() {
     // Reset car spawn interval
     clearInterval(carSpawner);
     carSpawner = setInterval(function () {
-        var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 550, 30, "car");
+        var Car = defineNewDynamicCircle(1.0, 0.2, 0.8, 750, 540, 30, "car");
         Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
     }, difficultySettings[difficulty].spawnRate);
 
