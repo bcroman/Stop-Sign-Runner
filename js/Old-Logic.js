@@ -59,11 +59,11 @@ var gameRunning = false;
 // Differrcult Values
 var difficultly = "easy";
 var difficultySettings = {
-    easy:   { carSpeed: -6, spawnRate: 3000 },
+    easy: { carSpeed: -6, spawnRate: 3000 },
     medium: { carSpeed: -8, spawnRate: 2600 },
-    hard:   { carSpeed: -10, spawnRate: 2000 },
+    hard: { carSpeed: -10, spawnRate: 2000 },
     possible: { carSpeed: -12, spawnRate: 1400 },
-    impossible: { carSpeed: -14, spawnRate: 1200}
+    impossible: { carSpeed: -14, spawnRate: 1200 }
 };
 
 /*
@@ -104,7 +104,7 @@ function update() {
     if (!gameRunning) return;
 
     world.Step(1 / 60, 10, 10);
-    
+
     world.ClearForces();
 
     // DRAW SECTION
@@ -202,8 +202,8 @@ listener.BeginContact = function (contact) {
     }
 
     // Car touches wall → delete car
-    if ((a && a.id === "car" && b && b.id === "leftwall" ) ||
-        (b && b.id === "car" && a && a.id === "leftwall" )) {
+    if ((a && a.id === "car" && b && b.id === "leftwall") ||
+        (b && b.id === "car" && a && a.id === "leftwall")) {
 
         // Add to score (1 points per car dodged) Display updated score
         score += 1;
@@ -224,12 +224,12 @@ listener.BeginContact = function (contact) {
 
     // Hero touches car → Lose Game
     // Car touches wall → delete car
-    if ((a && a.id === "car" && b && b.id === "player" ) ||
-        (b && b.id === "car" && a && a.id === "player" )) {
+    if ((a && a.id === "car" && b && b.id === "player") ||
+        (b && b.id === "car" && a && a.id === "player")) {
         //console.log("Game Over!");
         overScreen()
     }
-    
+
 }
 listener.EndContact = function (contact) {
     //console.log("End Contact:" + contact.GetFixtureA().GetBody().GetUserData());
@@ -271,7 +271,7 @@ $(document).keyup(function (e) {
     if (e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) {
         //console.log("Player Fall");
         jumpPressed = false; // Stop jump hold mechanic
-    } 
+    }
 });
 
 /*
@@ -381,7 +381,7 @@ function overScreen() {
 }
 
 // On Load DOM
-window.addEventListener("DOMContentLoaded", function() {
+window.addEventListener("DOMContentLoaded", function () {
 
     // Hide everything first
     document.getElementById("b2dcan").style.display = "none";
@@ -390,11 +390,11 @@ window.addEventListener("DOMContentLoaded", function() {
     document.getElementById("highscoreDisplay").innerText = "High Score: " + highscore;
 
     //Button Functions
-    document.getElementById("restartBtn").addEventListener("click", function() {
+    document.getElementById("restartBtn").addEventListener("click", function () {
         startGame();
     });
 
-    document.getElementById("startBtn").addEventListener("click", function() {
+    document.getElementById("startBtn").addEventListener("click", function () {
         startGame();
     });
 
@@ -423,7 +423,7 @@ function startGame() {
 
     Player = defineNewDynamicCircle(0.0, 0, 0, 150, 540, 15, "player");
     Player.GetBody().SetFixedRotation(true);
-    
+
     // Restart the car spawner
     clearInterval(carSpawner);
     carSpawner = setInterval(function () {
