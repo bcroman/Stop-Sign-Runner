@@ -54,6 +54,7 @@ var animationFrameId;
 var score = 0;
 var highscore = parseInt(localStorage.getItem('Highscore'), 10) || 0; // Get High Score from Local Storage or set to 0
 var gameOverText = "";
+var gameRunning = false;
 
 // Differrcult Values
 var difficultly = "easy";
@@ -63,7 +64,6 @@ var difficultySettings = {
     hard:   { carSpeed: -10, spawnRate: 2000 },
     possible: { carSpeed: -12, spawnRate: 1400 },
     impossible: { carSpeed: -14, spawnRate: 1200}
-
 };
 
 /*
@@ -100,6 +100,9 @@ world.SetDebugDraw(debugDraw);
 * Update World Loop
 */
 function update() {
+    // Only run the game loop if the game is active
+    if (!gameRunning) return;
+
     world.Step(1 / 60, 10, 10);
     
     world.ClearForces();
@@ -149,8 +152,6 @@ function update() {
     }
     destroylist.length = 0;
 
-    animationFrameId = window.requestAnimationFrame(update);
-
     // Allow slightly higher jump if player still holding key
     if (jumpPressed && (Date.now() - jumpStartTime) < maxHoldTime) {
         const body = Player.GetBody();
@@ -164,6 +165,11 @@ function update() {
     if (vel.y > 0) { // falling
         // apply extra gravity force to make descent faster
         Player.GetBody().ApplyForce(new b2Vec2(0, 30), Player.GetBody().GetWorldCenter());
+    }
+
+    // Request next frame
+    if (gameRunning) {
+        animationFrameId = window.requestAnimationFrame(update);
     }
 
 }
@@ -360,6 +366,11 @@ function startScreen() {
 
 //Game Over Screen Function
 function overScreen() {
+    // Stop Game Runninbg in Background
+    gameRunning = false;
+    cancelAnimationFrame(animationFrameId);
+    clearInterval(carSpawner);
+
     document.getElementById("gameOverTxt").textContent = gameOverText;
     document.getElementById("finalScoreDisplay").textContent = "Cars Dodged: " + score;
     document.getElementById("finalHighscoreDisplay").innerText = "High Score: " + highscore;
@@ -367,7 +378,6 @@ function overScreen() {
 
     document.getElementById("GameOverScreen").style.display = "flex";
     document.getElementById("b2dcan").style.display = "none";
-    cancelAnimationFrame(animationFrameId);
 }
 
 // On Load DOM
@@ -395,6 +405,8 @@ window.addEventListener("DOMContentLoaded", function() {
 function startGame() {
     // Stop the animation loop
     cancelAnimationFrame(animationFrameId);
+
+    gameRunning = true; // Set game as running
 
     //Distory All Bodies
     for (var body = world.GetBodyList(); body; body = body.GetNext()) {
@@ -454,13 +466,13 @@ function updateHighScore() {
 function updateDifficulty() {
     let newDifficulty = difficulty;
 
-    if (score >= 40) {
+    if (score >= 100) {
         newDifficulty = "impossible";
-    } else if (score >= 30) {
+    } else if (score >= 75) {
         newDifficulty = "possible";
-    } else if (score >= 20) {
+    } else if (score >= 50) {
         newDifficulty = "hard";
-    } else if (score >= 10) {
+    } else if (score >= 25) {
         newDifficulty = "medium";
     } else {
         newDifficulty = "easy";
