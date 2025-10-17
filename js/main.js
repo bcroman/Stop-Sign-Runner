@@ -34,7 +34,6 @@ images.ground.src = "assets/Ground.png";
 images.background.src = "assets/Background.png";
 
 //World Variables
-var OnGround = false;
 var CarSpeed = -6; // Car Speed
 var animationFrameId;
 var score = 0;
@@ -67,8 +66,7 @@ var carSpawner = setInterval(function () {
     //console.log("Car Spawned");
 }, 3000);
 
-var Player = defineNewDynamicCircle(0.0, 0, 0, 150, 540, 15, "player");
-Player.GetBody().SetFixedRotation(true);
+var Player = new PlayerCharacter(150, 540, 15);
 
 /*
 * Debug Draw
@@ -133,25 +131,12 @@ function update() {
         }
     }
 
+    Player.jumpUpdate();
+
     for (var i in destroylist) {
         world.DestroyBody(destroylist[i]);
     }
     destroylist.length = 0;
-
-    // Allow slightly higher jump if player still holding key
-    if (jumpPressed && (Date.now() - jumpStartTime) < maxHoldTime) {
-        const body = Player.GetBody();
-        const vel = body.GetLinearVelocity();
-        if (vel.y < 0) { // still moving upward
-            body.ApplyForce(new b2Vec2(0, jumpBoost), body.GetWorldCenter());
-        }
-    }
-
-    const vel = Player.GetBody().GetLinearVelocity();
-    if (vel.y > 0) { // falling
-        // apply extra gravity force to make descent faster
-        Player.GetBody().ApplyForce(new b2Vec2(0, 30), Player.GetBody().GetWorldCenter());
-    }
 
     // Request next frame
     if (gameRunning) {
@@ -183,8 +168,7 @@ listener.BeginContact = function (contact) {
     // Hero touches ground → allow jump
     if ((a && a.id === "player" && b && b.id === "ground") ||
         (b && b.id === "player" && a && a.id === "ground")) {
-        OnGround = true;
-        jumpPressed = false;
+        Player.setOnGround(true);
     }
 
     // Car touches wall → delete car
@@ -225,7 +209,7 @@ listener.EndContact = function (contact) {
     // Hero leaves ground → disallow jump
     if ((a && a.id === "player" && b && b.id === "ground") ||
         (b && b.id === "player" && a && a.id === "ground")) {
-        OnGround = false;
+        Player.setOnGround(false);
     }
 }
 listener.PostSolve = function (contact, impulse) {
@@ -242,9 +226,8 @@ Keyboard Controls
 */
 // Key Down -> W, Up Arrow, Space
 $(document).keydown(function (e) {
-    if ((e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) && OnGround) {
-        //console.log("Player Jump");
-        dojump(); //Call Jump Function
+    if ((e.keyCode == 87 || e.keyCode == 38 || e.keyCode == 32) && Player.onGround) {
+        Player.jump();
     }
     if (e.keyCode === 68) { // D key
         showDebug = !showDebug;
@@ -254,40 +237,14 @@ $(document).keydown(function (e) {
 
 // Key Up -> W, Up Arrow, Space
 $(document).keyup(function (e) {
-    if (e.keyCode == 87 || e.keyCode == 38 | e.keyCode == 32) {
-        //console.log("Player Fall");
-        jumpPressed = false; // Stop jump hold mechanic
+    if (e.keyCode == 87 || e.keyCode == 38 || e.keyCode == 32) {
+        Player.releaseJump();
     }
 });
 
 /*
 * Utility Functions & Objects
 */
-// Jump Function
-// Variables for jump hold mechanic
-let jumpPressed = false;
-let jumpStartTime = 0;
-let jumpHeight = -9.2;
-const maxHoldTime = 120; // milliseconds player can hold for higher jump
-const jumpBoost = -2.5;  // extra upward velocity if held briefly
-
-function dojump() {
-    if (OnGround) {
-        const body = Player.GetBody();
-
-        // Reset vertical velocity before jumping (for consistency)
-        const v = body.GetLinearVelocity();
-        v.y = 0;
-        body.SetLinearVelocity(v);
-
-        // Set upward velocity directly
-        body.SetLinearVelocity(new b2Vec2(v.x, jumpHeight)); // initial jump burst
-
-        OnGround = false;
-        jumpPressed = true;
-        jumpStartTime = Date.now();
-    }
-}
 
 // Static Object
 function defineNewStatic(density, friction, restitution, x, y, width, height, objid) {
@@ -407,8 +364,7 @@ function startGame() {
     leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
     rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
-    Player = defineNewDynamicCircle(0.0, 0, 0, 150, 540, 15, "player");
-    Player.GetBody().SetFixedRotation(true);
+    Player = new PlayerCharacter(150, 540, 15);
 
     // Restart the car spawner
     clearInterval(carSpawner);
