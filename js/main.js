@@ -30,7 +30,6 @@ const images = {
 // Set image sources
 images.player.src = "assets/Player.png";
 images.car.src = "assets/Car.png";
-images.ground.src = "assets/Ground.png";
 images.background.src = "assets/Background.png";
 
 //World Variables
@@ -53,17 +52,7 @@ carManager.startSpawner();
 
 var Player = new PlayerCharacter(150, 540, 15);
 
-/*
-* Debug Draw
-*/
-var debugDraw = new b2DebugDraw();
-debugDraw.SetSprite(document.getElementById("b2dcan").getContext("2d")
-);
-debugDraw.SetDrawScale(SCALE);
-debugDraw.SetFillAlpha(0.3);
-debugDraw.SetLineThickness(1.0);
-debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-world.SetDebugDraw(debugDraw);
+var renderer = new Renderer("b2dcan", images, world, { width: WIDTH, height: HEIGHT, scale: SCALE });
 
 /*
 * Update World Loop
@@ -77,44 +66,8 @@ function update() {
     world.ClearForces();
 
     // DRAW SECTION
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
-    if (showDebug) {
-        world.DrawDebugData();
-    }
-    else {
-
-        // Draw background
-        if (images.background.complete) {
-            ctx.drawImage(images.background, 0, 0, WIDTH, HEIGHT);
-        } else {
-            ctx.fillStyle = "#87ceeb";
-            ctx.fillRect(0, 0, WIDTH, HEIGHT);
-        }
-
-        // Draw all Box2D bodies with sprites
-        for (let body = world.GetBodyList(); body; body = body.GetNext()) {
-            const userData = body.GetUserData();
-            if (!userData) continue;
-
-            const pos = body.GetPosition();
-            const angle = body.GetAngle();
-            const x = pos.x * SCALE;
-            const y = pos.y * SCALE;
-
-            switch (userData.id) {
-                case "player":
-                    drawImageCentered(images.player, x, y, 100, 100, angle);
-                    break;
-                case "car":
-                    drawImageCentered(images.car, x, y, 150, 100, angle);
-                    break;
-                case "ground":
-                    ctx.drawImage(images.ground, 0, HEIGHT, WIDTH, 50);
-                    break;
-            }
-        }
-    }
+    renderer.setShowDebug(showDebug);
+    renderer.draw();
 
     Player.jumpUpdate();
 
@@ -130,16 +83,6 @@ function update() {
 
 }
 animationFrameId = window.requestAnimationFrame(update);
-
-// Helper function for drawing centered images
-function drawImageCentered(img, x, y, w, h, angle) {
-    if (!img.complete) return;
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(angle);
-    ctx.drawImage(img, -w / 2, -h / 2, w, h);
-    ctx.restore();
-}
 
 /*
 * Listeners
