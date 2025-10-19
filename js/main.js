@@ -34,22 +34,11 @@ images.ground.src = "assets/Ground.png";
 images.background.src = "assets/Background.png";
 
 //World Variables
-var CarSpeed = -6; // Car Speed
 var animationFrameId;
 var score = 0;
 var highscore = parseInt(localStorage.getItem('Highscore'), 10) || 0; // Get High Score from Local Storage or set to 0
-var gameOverText = "";
+var gameOverText;
 var gameRunning = false;
-
-// Differrcult Values
-var difficultly = "easy";
-var difficultySettings = {
-    easy: { carSpeed: -6, spawnRate: 3000 },
-    medium: { carSpeed: -8, spawnRate: 2600 },
-    hard: { carSpeed: -10, spawnRate: 2000 },
-    possible: { carSpeed: -12, spawnRate: 1400 },
-    impossible: { carSpeed: -14, spawnRate: 1200 }
-};
 
 /*
 * World Objects
@@ -59,12 +48,8 @@ var ground = defineNewStatic(0.1, 0, 0, (WIDTH / 2), HEIGHT - 15, (WIDTH / 2), 5
 var leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
 var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
-// Dynamic
-var carSpawner = setInterval(function () {
-    Car = defineNewDynamic(1.0, 0.2, 0.8, 750, 540, 75, 30, "car");
-    Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
-    //console.log("Car Spawned");
-}, 3000);
+var carManager = new CarManager();
+carManager.startSpawner();
 
 var Player = new PlayerCharacter(150, 540, 15);
 
@@ -180,10 +165,9 @@ listener.BeginContact = function (contact) {
         console.log("Score: " + score);
         document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;
 
-        // update difficulty based on score 
-        updateDifficulty();
+        carManager.updateDifficultyByScore(score);
 
-        updateHighScore(); //Call High Score Update Function
+        updateHighScore()
 
         // Update High Score Displays
         document.getElementById("highscoreDisplay").innerText = "High Score: " + highscore;
@@ -312,7 +296,7 @@ function overScreen() {
     // Stop Game Runninbg in Background
     gameRunning = false;
     cancelAnimationFrame(animationFrameId);
-    clearInterval(carSpawner);
+    carManager.stopSpawner();
 
     document.getElementById("gameOverTxt").textContent = gameOverText;
     document.getElementById("finalScoreDisplay").textContent = "Cars Dodged: " + score;
@@ -366,19 +350,12 @@ function startGame() {
 
     Player = new PlayerCharacter(150, 540, 15);
 
-    // Restart the car spawner
-    clearInterval(carSpawner);
-    carSpawner = setInterval(function () {
-        Car = defineNewDynamic(1.0, 0.2, 0.8, 750, 540, 75, 30, "car");
-        Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
-    }, 2300);
+    // Restart the car spawner via manager
+    carManager.stopSpawner();
+    carManager.setDifficulty("easy"); // reset difficulty defaults and restart spawner
 
     //Scores
     score = 0;
-
-    // Reset Difficulty
-    difficulty = "easy";
-    applyDifficultySettings();
 
     // Hide Game Over, show canvas
     document.getElementById("StartGameScreen").style.display = "none";
@@ -402,44 +379,4 @@ function updateHighScore() {
     } else {
         gameOverText = "Try Again to Beat the High Score!"; // Reset Game Over Text
     }
-}
-
-// Change Differicutly Function
-function updateDifficulty() {
-    let newDifficulty = difficulty;
-
-    if (score >= 100) {
-        newDifficulty = "impossible";
-    } else if (score >= 75) {
-        newDifficulty = "possible";
-    } else if (score >= 50) {
-        newDifficulty = "hard";
-    } else if (score >= 25) {
-        newDifficulty = "medium";
-    } else {
-        newDifficulty = "easy";
-    }
-
-    // Only change if the difficulty tier is different
-    if (newDifficulty !== difficulty) {
-        difficulty = newDifficulty;
-        applyDifficultySettings();
-    }
-}
-
-//Update Game Changes
-function applyDifficultySettings() {
-    // Update global speed
-    CarSpeed = difficultySettings[difficulty].carSpeed;
-
-    // Reset car spawn interval
-    clearInterval(carSpawner);
-    carSpawner = setInterval(function () {
-        Car = defineNewDynamic(1.0, 0.2, 0.8, 750, 540, 75, 30, "car");
-        Car.GetBody().SetLinearVelocity(new b2Vec2(CarSpeed, 0));
-    }, difficultySettings[difficulty].spawnRate);
-
-    console.log("Difficulty changed to:", difficulty);
-    document.getElementById("difficultyDisplay").textContent =
-        "Difficulty: " + difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
 }
