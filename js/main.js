@@ -104,13 +104,9 @@ listener.BeginContact = function (contact) {
         (b && b.id === "car" && a && a.id === "leftwall")) {
 
         // Add to score (1 points per car dodged) Display updated score
-        score += 1;
-        console.log("Score: " + score);
-        document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;
+        updateScore();
 
         carManager.updateDifficultyByScore(score);
-
-        updateHighScore()
 
         // Update High Score Displays
         document.getElementById("highscoreDisplay").innerText = "High Score: " + highscore;
@@ -312,14 +308,19 @@ function startGame() {
     update(); // Restart game loop
 }
 
-//Update High Score Value Function
-function updateHighScore() {
-    // Check if current score is greater than highscore
+
+//Function: Update Game Score & Display Values
+function updateScore() {
+    score = score + 10;
+    console.log("Score: " + score);
+    document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;
+
+    // If Score greater than High Score, update High Score
     if (score > highscore) {
-        highscore = score;  // Update High Score Variable
-        gameOverText = "New High Score!"; // PR Score Message
+        highscore = score;
+        gameOverText = "New High Score!";
         localStorage.setItem('Highscore', String(highscore)); // Update Local Storage
     } else {
-        gameOverText = "Try Again to Beat the High Score!"; // Reset Game Over Text
+        gameOverText = "Try Again to Beat the High Score!";
     }
 }
