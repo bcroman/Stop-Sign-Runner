@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
     <title>Stop Sign Runner - Home</title>
+
+    <?php
+    require_once ('./php/Oauth/OAuth-Class.php');
+    $handler = new ProviderHandle();
+    $handler->addProvider('Discord', 'Test1', 'Test');
+    var_dump($handler);
+    ?>
 </head>
 
 <body>

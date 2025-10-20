@@ -1,52 +1,50 @@
 <!DOCTYPE html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- Game JS Files -->
-    <script src="./js/Box2dWeb-2.1.a.3.min.js" defer></script>
-    <script src="./js//b2World.js" defer></script>
-    <script src="./js/CarManager.js" defer></script>
-    <script src="./js/Player.js" defer></script>
-    <script src="./js/Renderer.js" defer></script>
-    <script src="./js/main.js" defer></script>
-    <title>Stop Sign Runner - Gane</title>
+  <!-- Game JS Files -->
+  <script src="./js/Box2dWeb-2.1.a.3.min.js" defer></script>
+  <script src="./js//b2World.js" defer></script>
+  <script src="./js/CarManager.js" defer></script>
+  <script src="./js/Player.js" defer></script>
+  <script src="./js/Renderer.js" defer></script>
+  <script src="./js/main.js" defer></script>
+  <title>Stop Sign Runner - Gane</title>
 </head>
 
 <body>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="game.html">Play Game</a></li>
+    <li><a href="about.html">About</a></li>
+  </ul>
 
-    <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="game.html">Play Game</a></li>
-        <li><a href="about.html">About</a></li>
-    </ul>
+  <h1>Stop Sign Runner</h1>
 
-    <h1>Stop Sign Runner</h1>
+  <div id="GameItems">
+    <p id="difficultyDisplay">Differculty: Easy</p>
 
-    <div id="GameItems">
-        <p id="difficultyDisplay">Differculty: Easy</p>
+    <canvas id="b2dcan" width="800" height="600"></canvas>
 
-        <canvas id="b2dcan" width="800" height="600"></canvas>
-
-        <div id="StartGameScreen">
-            <h1>Stop Sign Runner</h1>
-            <button id="startBtn">Start Game</button>
-        </div>
-
-        <div id="GameOverScreen">
-            <h1>Game Over</h1>
-            <p id="gameOverTxt"></p>
-            <p id="finalScoreDisplay">Car Dodged: 0</p>
-            <p id="finalHighscoreDisplay">High Score: 0</p>
-            <button id="restartBtn">Restart</button>
-            <button>View Leaderboard</button>
-        </div>
-
-        <p id="scoreDisplay">Car Dodged: 0</p>
-        <p id="highscoreDisplay">High Score: 0</p>
+    <div id="StartGameScreen">
+      <h1>Stop Sign Runner</h1>
+      <button id="startBtn">Start Game</button>
     </div>
 
+    <div id="GameOverScreen">
+      <h1>Game Over</h1>
+      <p id="gameOverTxt"></p>
+      <p id="finalScoreDisplay">Car Dodged: 0</p>
+      <p id="finalHighscoreDisplay">High Score: 0</p>
+      <button id="restartBtn">Restart</button>
+      <button>View Leaderboard</button>
+    </div>
+
+    <p id="scoreDisplay">Car Dodged: 0</p>
+    <p id="highscoreDisplay">High Score: 0</p>
+  </div>
 </body>
