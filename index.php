@@ -7,15 +7,14 @@
     <title>Stop Sign Runner - Home</title>
 
     <?php
-    require_once ('./php/Oauth/OAuth-Class.php');
+    require_once ('php/Oauth/OAuth-Class.php');
     $handler = new ProviderHandle();
-    $handler->addProvider('Discord', 'Test1', 'Test');
-    var_dump($handler);
+    $handler->addProvider('Discord', '1429770701958680608', 'Test');
+    $handler->performAction();
     ?>
 </head>
 
 <body>
-
     <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="game.html">Play Game</a></li>
@@ -23,4 +22,8 @@
     </ul>
 
     <h1>Welcome to Stop Sign Runner</h1>
+
+    <?php
+    echo $handler->generateLoginText();
+    ?>
 </body>
