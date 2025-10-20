@@ -1,6 +1,6 @@
 <?php
-define('REDIRECT_URI', 'https://compserver.uhi.ac.uk/~in21006366/Stop-Sign-Runner/php/Oauth/');
-define('REDIRECTTOKENURI', 'https://compserver.uhi.ac.uk/~in21006366/Stop-Sign-Runner/php/Oauth/');
+define('REDIRECT_URI', 'https://compserver.uhi.ac.uk/~in21006366/Stop-Sign-Runner/');
+define('REDIRECTTOKENURI', 'https://compserver.uhi.ac.uk/~in21006366/Stop-Sign-Runner/');
 
 const PROVIDERLIST = array(
     [
@@ -36,5 +36,4 @@ const PROVIDERLIST = array(
             'class' => 'OAuth'
         ]
     ]
-)
-    ?>
+);

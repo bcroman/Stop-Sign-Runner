@@ -31,7 +31,7 @@ class OAuth
         );
 
         if (session_status() !== PHP_SESSION_ACTIVE) {
-            @session_start();
+            session_start();
         }
         if (array_key_exists('oauth_state', $_SESSION) && !empty($_SESSION['oauth_state'])) {
             $params['state'] = $_SESSION['oauth_state'];
@@ -134,4 +134,3 @@ class ProviderHandle
         $_SESSION[$key] = $value;
     }
 }
-?>

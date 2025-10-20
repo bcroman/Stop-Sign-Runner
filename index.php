@@ -9,7 +9,7 @@
     <?php
     require_once ('php/Oauth/OAuth-Class.php');
     $handler = new ProviderHandle();
-    $handler->addProvider('Discord', '1429770701958680608', 'Test');
+    $handler->addProvider('Discord', '1429770701958680608', '???');
     $handler->performAction();
     ?>
 </head>
