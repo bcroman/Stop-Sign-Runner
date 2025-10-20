@@ -9,7 +9,7 @@
     <?php
     require_once ('php/Oauth/OAuth-Class.php');
     $handler = new ProviderHandle();
-    $handler->addProvider('Discord', '1429770701958680608', '???');
+    $handler->addProvider('Discord', '1429770701958680608', '???'); //Add Client Secret Key
     $handler->performAction();
     ?>
 </head>
@@ -24,6 +24,13 @@
     <h1>Welcome to Stop Sign Runner</h1>
 
     <?php
-    echo $handler->generateLoginText();
+    if ($handler->status === 'logged in') {
+        echo '<h2>' . htmlspecialchars($handler->providerInstance->getName(), ENT_QUOTES, 'UTF-8') . '</h2>';
+        echo '<img src="' . htmlspecialchars($handler->providerInstance->getAvatar(), ENT_QUOTES, 'UTF-8') . '" alt="User Avatar" width="100">';
+        echo $handler->generateLogout();
+    } else {
+        echo $handler->generateLoginText();
+    }
     ?>
+
 </body>

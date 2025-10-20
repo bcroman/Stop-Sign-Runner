@@ -1,10 +1,46 @@
 <?php
 require_once __DIR__ . '/defs.php';
 
+class CurlHandker
+{
+    public $curl;
+
+    public function __construct($url = '')
+    {
+        $this->curl = curl_init($url);
+        curl_setopt($this->curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($this->curl, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+        $this->setPost();
+    }
+
+    public function setHeader($header)
+    {
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $header);
+    }
+
+    public function setPost($value = true)
+    {
+        curl_setopt($this->curl, CURLOPT_POST, $value);
+    }
+
+    public function setQuery($query = [])
+    {
+        curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($query));
+    }
+
+    public function runCurl()
+    {
+        return curl_exec($this->curl);
+    }
+}
+
 class OAuth
 {
     public $providername, $authURL, $tokenURL, $apiURL, $revokeURL, $scope;
     protected $secret, $cid;
+    public $userinfo;
 
     public function __construct($providerInfo, $cid, $secret)
     {
@@ -17,6 +53,50 @@ class OAuth
         $this->scope = $providerInfo['data']['scope'];
         $this->cid = $cid;
         $this->secret = $secret;
+    }
+
+    public function getAuth($code)
+    {
+        $curl = new CurlHandker($this->tokenURL);
+        $headers = ['Accept: application/json'];
+        $curl->setHeader($headers);
+        $params = array(
+            'grant_type' => 'authorization_code',
+            'client_id' => $this->cid,
+            'client_secret' => $this->secret,
+            'redirect_uri' => REDIRECTTOKENURI,
+            'code' => $code
+        );
+        $curl->setQuery($params);
+        $results = json_decode($curl->runCurl());
+        return $results;
+    }
+
+    public function getAuthConfirm($token)
+    {
+        $curl = new CurlHandker($this->apiURL); // Always use @me for Discord
+        $curl->setPost(false);
+
+        $headers = [
+            'Accept: application/json',
+            'Authorization: Bearer ' . $token
+        ];
+
+        $curl->setHeader($headers);
+        $response = $curl->runCurl();
+
+        if (curl_errno($curl->curl)) {
+            echo 'Curl Error: ' . curl_error($curl->curl);
+        }
+
+        $results = json_decode($response);
+
+        if (!$results || isset($results->message)) {
+            echo '<pre>Discord API error: ' . htmlspecialchars($response) . '</pre>';
+        }
+
+        $this->userinfo = $results;
+        return $results;
     }
 
     public function login()
@@ -45,6 +125,21 @@ class OAuth
         $name = htmlspecialchars($this->providername, ENT_QUOTES, 'UTF-8');
         return '<p><a href="?action=login&provider=' . $name . '">Login with ' . $name . '</a></p>';
     }
+
+    public function getName()
+    {
+        return $this->userinfo->username;
+    }
+
+    public function getAvatar()
+    {
+        return 'https://cdn.discordapp.com/avatars/' . $this->getID() . '/' . $this->userinfo->avatar . '.png';
+    }
+
+    public function getID()
+    {
+        return $this->userinfo->id;
+    }
 }
 
 class ProviderHandle
@@ -63,6 +158,8 @@ class ProviderHandle
             $this->activeProvider = $this->getGetParam('provider');
         else
             $this->activeProvider = $this->getSessionValue('provider');
+        $this->code = $this->getGetParam('code');
+        $this->access_token = $this->getSessionValue('access_token');
     }
 
     public function performAction()
@@ -74,6 +171,11 @@ class ProviderHandle
                     $this->login();
                 } else if ($this->action == 'logout') {
                     $this->logout();
+                } else if ($this->code) {
+                    $this->processCode();
+                } else if ($this->getSessionValue('access_token')) {
+                    $this->processToken();
+                    var_dump($this->providerInstance->userinfo);
                 }
             }
         }
@@ -81,14 +183,37 @@ class ProviderHandle
 
     public function login()
     {
-        echo "Login Stub!";
         $this->setSessionValue('provider', $this->providerInstance->providername);
+        $this->status = 'logging in';
         $this->providerInstance->login();
     }
 
     public function logout()
     {
-        echo "Logout Stub!";
+        $this->status = 'logged out';
+        session_unset();
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        die();
+    }
+
+    public function generateLogout()
+    {
+        return '<p><a href="?action=logout">Logout / Clear</a></p>';
+    }
+
+    public function processCode()
+    {
+        $result = $this->providerInstance->getAuth($this->code);
+        if ($result->access_token) {
+            $this->status = 'logged in';
+            $this->setSessionValue('access_token', $result->access_token);
+            $this->processToken();
+        }
+    }
+
+    public function processToken()
+    {
+        $this->providerInstance->getAuthConfirm($this->getSessionValue('access_token'));
     }
 
     public function addProvider($name, $cid, $secret)
