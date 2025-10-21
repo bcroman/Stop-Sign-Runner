@@ -242,6 +242,13 @@ function overScreen() {
     document.getElementById("finalHighscoreDisplay").innerText = "High Score: " + highscore;
     document.getElementById("scoreDisplay").textContent = "";
 
+    // Send High Score Value to Database
+    fetch('./php/leaderboard/save_score.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ score: highscore })
+    });
+
     document.getElementById("GameOverScreen").style.display = "flex";
     document.getElementById("b2dcan").style.display = "none";
 }

@@ -1,3 +1,7 @@
+-- Drop Tables
+DROP TABLE IF EXISTS WP_Scores;
+DROP TABLE IF EXISTS WP_Users;
+
 -- Create User Table
 CREATE TABLE WP_Users (
     id INT AUTO_INCREMENT PRIMARY KEY,
