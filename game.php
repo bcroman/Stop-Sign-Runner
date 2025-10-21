@@ -45,8 +45,8 @@ require_once('php/Oauth/check_auth.php'); // Auth Check Session
       <p id="gameOverTxt"></p>
       <p id="finalScoreDisplay">Car Dodged: 0</p>
       <p id="finalHighscoreDisplay">High Score: 0</p>
-      <button id="restartBtn">Restart</button>
-      <button>View Leaderboard</button>
+      <button id="restartBtn">Restart</button><br>
+      <button id="leaderboardBtn">View Leaderboard</button>
     </div>
 
     <p id="scoreDisplay">Car Dodged: 0</p>

@@ -20,7 +20,7 @@
 
     <p>Top 10 Highest Scores From Stop Sign Runner Game</p>
 
-    <table id="leaderboard" border="1">
+    <table id="leaderboard">
         <thead>
             <tr>
                 <th>Position</th>

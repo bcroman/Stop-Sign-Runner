@@ -256,12 +256,23 @@ window.addEventListener("DOMContentLoaded", function () {
     document.getElementById("highscoreDisplay").innerText = "High Score: " + highscore;
 
     //Button Functions
+    // Restart Game Button
     document.getElementById("restartBtn").addEventListener("click", function () {
         startGame();
     });
 
+    // Start Game Button
     document.getElementById("startBtn").addEventListener("click", function () {
         startGame();
+    });
+
+    // Load Leaderboard Page Button
+    document.getElementById("leaderboardBtn").addEventListener("click", function () {
+        // Stop the game and navigate to the leaderboard page
+        cancelAnimationFrame(animationFrameId);
+        gameRunning = false;
+        carManager.stopSpawner();
+        window.location.href = "./leaderboard.php";
     });
 
     startScreen(); // Show start screen
