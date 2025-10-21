@@ -8,9 +8,10 @@
 
     <?php
     require_once ('php/Oauth/OAuth-Class.php');
+    $config = require_once ('php/config/secrets.php');
     $handler = new ProviderHandle();
-    $handler->addProvider('Discord', '1429770701958680608', '???');
-    $handler->addProvider('GitHub', 'Ov23li8toIfSqVKTLmRB', '???');
+    $handler->addProvider('Discord', $config['Discord']['cid'], $config['Discord']['secret']);
+    $handler->addProvider('GitHub', $config['GitHub']['cid'], $config['GitHub']['secret']);
     $handler->performAction();
     ?>
 </head>
