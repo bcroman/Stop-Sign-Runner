@@ -1,3 +1,25 @@
+<?php
+session_start();
+
+// Load DB connection
+require_once __DIR__ . '/php/config/dbconnect.php';
+
+try {
+    // Get top 10 high scores (each user's best score)
+    $stmt = $pdo->query("
+        SELECT u.username, u.avatar, MAX(s.score) AS highscore
+        FROM WP_Scores s
+        JOIN WP_Users u ON u.id = s.user_id
+        GROUP BY s.user_id
+        ORDER BY highscore DESC
+        LIMIT 10
+    ");
+    $leaders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die('Database error: ' . $e->getMessage());
+}
+?>
+
 <!DOCTYPE html>
 
 <head>
@@ -29,11 +51,28 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td>BcRoamn04</td>
-                <td>100</td>
-            </tr>
+            <?php
+            $rank = 1;
+            if (!empty($leaders)):
+                foreach ($leaders as $row): ?>
+                    <tr>
+                        <td><?= $rank++ ?></td>
+                        <td>
+                            <?php if (!empty($row['avatar'])): ?>
+                                <img src="<?= htmlspecialchars($row['avatar']) ?>" alt="Avatar" class="avatar">
+                            <?php else: ?>
+                                <img src="images/default-avatar.png" alt="Avatar" class="avatar">
+                            <?php endif; ?>
+                            <?= htmlspecialchars($row['username']) ?>
+                        </td>
+                        <td><?= htmlspecialchars($row['highscore']) ?></td>
+                    </tr>
+                <?php endforeach;
+            else: ?>
+                <tr>
+                    <td colspan="3">No scores recorded yet.</td>
+                </tr>
+            <?php endif; ?>
         </tbody>
     </table>
 
