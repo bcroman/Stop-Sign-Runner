@@ -20,6 +20,10 @@ h1 {
   text-align: center;
 }
 
+p{
+  text-align: center;
+}
+
 /* 
 Navigation Bar Styling
 */
@@ -95,4 +99,22 @@ Game Screens
   font-family: sans-serif;
   pointer-events: auto;
   z-index: 10;
+}
+
+/*
+Leaderboard Styling
+*/
+#leaderboard {
+  border-collapse: collapse;
+  width: 50%;
+  margin: 20px auto;
+  text-align: center;
+}
+#leaderboard th, #leaderboard td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+#leaderboard th {
+  background-color: #333333;
+  color: white;
 }
