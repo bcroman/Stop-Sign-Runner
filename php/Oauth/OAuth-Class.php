@@ -142,13 +142,16 @@ class OAuth
     }
 }
 
-class OAuthGitHub extends OAuth{
-    public function getName() {
+class OAuthGitHub extends OAuth
+{
+    public function getName()
+    {
         return $this->userinfo->login;
     }
 
-    public function getAvatar() {
-        return 'https://avatars.githubusercontent.com/u/' . $this->getID().'?v=4';
+    public function getAvatar()
+    {
+        return 'https://avatars.githubusercontent.com/u/' . $this->getID() . '?v=4';
     }
 }
 
@@ -224,6 +227,69 @@ class ProviderHandle
     {
         $this->status = 'logged in';
         $this->providerInstance->getAuthConfirm($this->getSessionValue('access_token'));
+
+        // Persist user to DB (requires php/dbconnect.php to set $pdo)
+        $dbFile = __DIR__ . '/../config/dbconnect.php';
+        if (file_exists($dbFile)) {
+            require_once $dbFile;
+        }
+
+        if (isset($pdo) && $pdo instanceof PDO) {
+            try {
+                // normalize provider id string (e.g. "discord", "github")
+                $provider = strtolower($this->providerInstance->providername);
+                $provider_user_id = (string) $this->providerInstance->getID();
+                $username = (string) $this->providerInstance->getName();
+                $avatar = (string) $this->providerInstance->getAvatar();
+
+                // Check if user exists
+                $stmt = $pdo->prepare("SELECT id FROM WP_Users WHERE provider = :provider AND provider_user_id = :pid");
+                $stmt->execute([
+                    ':provider' => $provider,
+                    ':pid' => $provider_user_id
+                ]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$user) {
+                    // Insert new user
+                    $insert = $pdo->prepare(
+                        "INSERT INTO WP_Users (provider, provider_user_id, username, avatar)
+                         VALUES (:provider, :pid, :username, :avatar)"
+                    );
+                    $insert->execute([
+                        ':provider' => $provider,
+                        ':pid' => $provider_user_id,
+                        ':username' => $username,
+                        ':avatar' => $avatar
+                    ]);
+                    $userId = $pdo->lastInsertId();
+                } else {
+                    // Update existing user (optional)
+                    $userId = $user['id'];
+                    $update = $pdo->prepare(
+                        "UPDATE WP_Users SET username = :username, avatar = :avatar WHERE id = :id"
+                    );
+                    $update->execute([
+                        ':username' => $username,
+                        ':avatar' => $avatar,
+                        ':id' => $userId
+                    ]);
+                }
+
+                // Save session values
+                if (session_status() !== PHP_SESSION_ACTIVE) {
+                    session_start();
+                }
+                $_SESSION['user_id'] = $userId;
+                $_SESSION['username'] = $username;
+                $_SESSION['avatar'] = $avatar;
+
+            } catch (Throwable $e) {
+                error_log("Database error: " . $e->getMessage());
+            }
+        } else {
+            error_log("OAuth processToken: PDO \$pdo not available (dbconnect.php missing or failed).");
+        }
     }
 
     public function addProvider($name, $cid, $secret)
