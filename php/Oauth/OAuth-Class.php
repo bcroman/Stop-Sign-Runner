@@ -142,6 +142,16 @@ class OAuth
     }
 }
 
+class OAuthGitHub extends OAuth{
+    public function getName() {
+        return $this->userinfo->login;
+    }
+
+    public function getAvatar() {
+        return 'https://avatars.githubusercontent.com/u/' . $this->getID().'?v=4';
+    }
+}
+
 class ProviderHandle
 {
     public $providerList = [];
@@ -213,6 +223,7 @@ class ProviderHandle
 
     public function processToken()
     {
+        $this->status = 'logged in';
         $this->providerInstance->getAuthConfirm($this->getSessionValue('access_token'));
     }
 

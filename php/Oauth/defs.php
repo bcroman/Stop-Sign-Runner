@@ -17,23 +17,12 @@ const PROVIDERLIST = array(
     [
         'providername' => 'GitHub',
         'data' => [
-            'authURL' => '',
-            'tokenURL' => '',
-            'apiURL' => '',
-            'revokeURL' => '',
-            'scope' => '',
-            'class' => 'OAuth'
-        ]
-    ],
-    [
-        'providername' => 'Reddit',
-        'data' => [
-            'authURL' => '',
-            'tokenURL' => '',
-            'apiURL' => '',
-            'revokeURL' => '',
-            'scope' => '',
-            'class' => 'OAuth'
+            'authURL' => 'https://github.com/login/oauth/authorize',
+            'tokenURL' => 'https://github.com/login/oauth/access_token',
+            'apiURL' => 'https://api.github.com/user',
+            'revokeURL' => 'https://github.com/applications/########/grant',
+            'scope' => 'user',
+            'class' => 'OAuthGitHub'
         ]
     ]
 );

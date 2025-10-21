@@ -9,7 +9,8 @@
     <?php
     require_once ('php/Oauth/OAuth-Class.php');
     $handler = new ProviderHandle();
-    $handler->addProvider('Discord', '1429770701958680608', '???'); //Add Client Secret Key
+    $handler->addProvider('Discord', '1429770701958680608', '???');
+    $handler->addProvider('GitHub', 'Ov23li8toIfSqVKTLmRB', '???');
     $handler->performAction();
     ?>
 </head>
