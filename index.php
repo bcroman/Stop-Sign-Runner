@@ -18,8 +18,8 @@
 
 <body>
     <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="game.html">Play Game</a></li>
+        <li><a href="index.php">Home</a></li>
+        <li><a href="game.php">Play Game</a></li>
         <li><a href="about.html">About</a></li>
     </ul>
 

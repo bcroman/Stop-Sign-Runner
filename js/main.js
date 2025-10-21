@@ -103,7 +103,7 @@ listener.BeginContact = function (contact) {
     if ((a && a.id === "car" && b && b.id === "leftwall") ||
         (b && b.id === "car" && a && a.id === "leftwall")) {
 
-        // Add to score (1 points per car dodged) Display updated score
+        // Add to score (5 points per car dodged) Display updated score
         updateScore();
 
         carManager.updateDifficultyByScore(score);
@@ -311,7 +311,7 @@ function startGame() {
 
 //Function: Update Game Score & Display Values
 function updateScore() {
-    score = score + 10;
+    score = score + 5;
     console.log("Score: " + score);
     document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;
 

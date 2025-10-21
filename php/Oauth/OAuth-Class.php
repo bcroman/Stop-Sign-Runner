@@ -185,7 +185,6 @@ class ProviderHandle
                     $this->processCode();
                 } else if ($this->getSessionValue('access_token')) {
                     $this->processToken();
-                    var_dump($this->providerInstance->userinfo);
                 }
             }
         }
