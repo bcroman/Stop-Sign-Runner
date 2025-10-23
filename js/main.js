@@ -50,7 +50,7 @@ var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "ri
 var carManager = new CarManager();
 carManager.startSpawner();
 
-var Player = new PlayerCharacter(150, 540, 15);
+var Player = new PlayerCharacter(150, 540, 2);
 
 var renderer = new Renderer("b2dcan", images, world, { width: WIDTH, height: HEIGHT, scale: SCALE });
 

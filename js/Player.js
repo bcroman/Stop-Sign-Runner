@@ -8,9 +8,9 @@ class PlayerCharacter {
         this.jumpPressed = false;
         this.jumpStartTime = 0;
 
-        this.jumpHeight = -9.2;
-        this.maxHoldTime = 120;
-        this.jumpBoost = -2.5;
+        this.jumpHeight = -9.4;
+        this.maxHoldTime = 150;
+        this.jumpBoost = -3;
     }
 
     jump() {
@@ -45,7 +45,7 @@ class PlayerCharacter {
         // faster fall
         const vel = this.GetBody().GetLinearVelocity();
         if (vel.y > 0) {
-            this.GetBody().ApplyForce(new b2Vec2(0, 30), this.GetBody().GetWorldCenter());
+            this.GetBody().ApplyForce(new b2Vec2(0, 40), this.GetBody().GetWorldCenter());
         }
     }
 }
