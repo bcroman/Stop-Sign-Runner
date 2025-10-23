@@ -123,7 +123,7 @@ class OAuth
     public function generateLoginText()
     {
         $name = htmlspecialchars($this->providername, ENT_QUOTES, 'UTF-8');
-        return '<p><a href="?action=login&provider=' . $name . '">Login with ' . $name . '</a></p>';
+        return '<p><a class="btn" href="?action=login&provider=' . $name . '">Login with ' . $name . '</a></p>';
     }
 
     public function getName()
@@ -210,7 +210,7 @@ class ProviderHandle
 
     public function generateLogout()
     {
-        return '<p><a href="?action=logout">Logout / Clear</a></p>';
+        return '<p><a class="btn" href="?action=logout">Logout</a></p>';
     }
 
     public function processCode()

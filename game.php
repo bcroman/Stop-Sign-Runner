@@ -25,7 +25,7 @@ require_once('php/Oauth/check_auth.php'); // Auth Check Session
     <li><a href="index.php">Home</a></li>
     <li><a href="game.php">Play Game</a></li>
     <li><a href="leaderboard.php">Leaderboard</a></li>
-    <li><a href="about.html">About</a></li>
+    <li><a href="about.php">About</a></li>
   </ul>
 
   <h1>Stop Sign Runner</h1>
