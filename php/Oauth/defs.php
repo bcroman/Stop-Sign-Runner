@@ -1,9 +1,12 @@
 <?php
+// OAuth Definitions
 define('REDIRECT_URI', 'https://compserver.uhi.ac.uk/~in21006366/Stop-Sign-Runner/');
 define('REDIRECTTOKENURI', 'https://compserver.uhi.ac.uk/~in21006366/Stop-Sign-Runner/');
 
+// Provider List
 const PROVIDERLIST = array(
     [
+        // Discord OAuth Settings
         'providername' => 'Discord',
         'data' => [
             'authURL' => 'https://discord.com/api/oauth2/authorize',
@@ -15,6 +18,7 @@ const PROVIDERLIST = array(
         ]
     ],
     [
+        // GitHub OAuth Settings
         'providername' => 'GitHub',
         'data' => [
             'authURL' => 'https://github.com/login/oauth/authorize',

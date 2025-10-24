@@ -1,10 +1,13 @@
 <?php
+// Load Definitions
 require_once __DIR__ . '/defs.php';
 
+// Class: Curl Handler Class
 class CurlHandker
 {
     public $curl;
 
+    // Constructor: Setup Curl
     public function __construct($url = '')
     {
         $this->curl = curl_init($url);
@@ -15,33 +18,40 @@ class CurlHandker
         $this->setPost();
     }
 
+    // Function: Set Curl Header
     public function setHeader($header)
     {
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $header);
     }
 
+    // Function: Set Curl Post
     public function setPost($value = true)
     {
         curl_setopt($this->curl, CURLOPT_POST, $value);
     }
 
+    // Function: Set Curl Query
     public function setQuery($query = [])
     {
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, http_build_query($query));
     }
 
+    // Function: Run Curl
     public function runCurl()
     {
         return curl_exec($this->curl);
     }
 }
 
+// Class: 
 class OAuth
 {
+    // OAth Provider Properties
     public $providername, $authURL, $tokenURL, $apiURL, $revokeURL, $scope;
     protected $secret, $cid;
     public $userinfo;
 
+    // Constructor: Initialize OAuth Provider
     public function __construct($providerInfo, $cid, $secret)
     {
         // Constructor code here
@@ -55,6 +65,7 @@ class OAuth
         $this->secret = $secret;
     }
 
+    // Function: Get Auth Token
     public function getAuth($code)
     {
         $curl = new CurlHandker($this->tokenURL);
@@ -72,37 +83,44 @@ class OAuth
         return $results;
     }
 
+    // Function: Confirm Auth Request
     public function getAuthConfirm($token)
     {
-        $curl = new CurlHandker($this->apiURL); // Always use @me for Discord
+        // Call Curl Handler
+        $curl = new CurlHandker($this->apiURL);
         $curl->setPost(false);
 
+        // Set Headers
         $headers = [
             'Accept: application/json',
             'Authorization: Bearer ' . $token
         ];
 
+        // Run Curl Request
         $curl->setHeader($headers);
         $response = $curl->runCurl();
 
+        // Check for Curl Errors
         if (curl_errno($curl->curl)) {
             echo 'Curl Error: ' . curl_error($curl->curl);
         }
 
-        $results = json_decode($response);
+        $results = json_decode($response); // Decode JSON Response
 
+        // Check for API Errors
         if (!$results || isset($results->message)) {
             echo '<pre>Discord API error: ' . htmlspecialchars($response) . '</pre>';
         }
 
+        // Save User Info
         $this->userinfo = $results;
         return $results;
     }
 
+    // Function: Initiate Login Process
     public function login()
     {
-        // Follow OAuth2 parameter names. If a state value has been stored in
-        // the session by the caller, include it for CSRF protection.
+        // Create OAuth2 parameter names
         $params = array(
             'client_id' => $this->cid,
             'redirect_uri' => REDIRECT_URI,
@@ -110,76 +128,93 @@ class OAuth
             'scope' => $this->scope
         );
 
+        // Check Session if Active
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
+        // Check for stored state values
         if (array_key_exists('oauth_state', $_SESSION) && !empty($_SESSION['oauth_state'])) {
             $params['state'] = $_SESSION['oauth_state'];
         }
+        // Load Provider Auth URL
         header('Location: ' . $this->authURL . '?' . http_build_query($params));
         die();
     }
 
+    // Function: Generate Login Text for Each Provider
     public function generateLoginText()
     {
         $name = htmlspecialchars($this->providername, ENT_QUOTES, 'UTF-8');
         return '<p><a class="btn" href="?action=login&provider=' . $name . '">Login with ' . $name . '</a></p>';
     }
 
+    // Function: Get User Username
     public function getName()
     {
         return $this->userinfo->username;
     }
 
+    // Function: Get Avatar URL
     public function getAvatar()
     {
         return 'https://cdn.discordapp.com/avatars/' . $this->getID() . '/' . $this->userinfo->avatar . '.png';
     }
 
+    // Function: Get User ID
     public function getID()
     {
         return $this->userinfo->id;
     }
 }
 
+// Class: GitHub OAuth Extension of OAuth Class
 class OAuthGitHub extends OAuth
 {
+    // Override: Get User ID Function
     public function getName()
     {
         return $this->userinfo->login;
     }
 
+    // Override: Get Avatar URL Function
     public function getAvatar()
     {
         return 'https://avatars.githubusercontent.com/u/' . $this->getID() . '?v=4';
     }
 }
 
+// Class: Provider Handler
 class ProviderHandle
 {
+    // Provider Handler Properties
     public $providerList = [];
     public $action, $activeProvider, $code, $access_token, $status;
     public $providerInstance;
 
+    // Constructor: Initialize Provider Handler
     public function __construct()
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
         $this->action = $this->getGetParam('action');
+        // Check for active provider
         if ($this->getGetParam('provider'))
             $this->activeProvider = $this->getGetParam('provider');
         else
+            // Get provider from session
             $this->activeProvider = $this->getSessionValue('provider');
         $this->code = $this->getGetParam('code');
         $this->access_token = $this->getSessionValue('access_token');
     }
 
+    // Function: Perform Action Based on User Input Status
     public function performAction()
     {
         foreach ($this->providerList as $provider) {
             if ($provider->providername === $this->activeProvider) {
                 $this->providerInstance = $provider;
+                // Perform Action
                 if ($this->action == 'login') {
                     $this->login();
                 } else if ($this->action == 'logout') {
@@ -193,6 +228,7 @@ class ProviderHandle
         }
     }
 
+    // Function: Initiate Login Process
     public function login()
     {
         $this->setSessionValue('provider', $this->providerInstance->providername);
@@ -200,6 +236,7 @@ class ProviderHandle
         $this->providerInstance->login();
     }
 
+    // Function: Logout User
     public function logout()
     {
         $this->status = 'logged out';
@@ -208,14 +245,17 @@ class ProviderHandle
         die();
     }
 
+    // Function: Generate Logout Text
     public function generateLogout()
     {
         return '<p><a class="btn" href="?action=logout">Logout</a></p>';
     }
 
+    // Function: Process Authorization Code
     public function processCode()
     {
         $result = $this->providerInstance->getAuth($this->code);
+        // Check for access token
         if ($result->access_token) {
             $this->status = 'logged in';
             $this->setSessionValue('access_token', $result->access_token);
@@ -223,20 +263,22 @@ class ProviderHandle
         }
     }
 
+    // Function: Process Token and Persist User
     public function processToken()
     {
         $this->status = 'logged in';
         $this->providerInstance->getAuthConfirm($this->getSessionValue('access_token'));
 
-        // Persist user to DB (requires php/dbconnect.php to set $pdo)
+        // Load DB Connection
         $dbFile = __DIR__ . '/../config/dbconnect.php';
         if (file_exists($dbFile)) {
             require_once $dbFile;
         }
 
+        // Check for PDO instance
         if (isset($pdo) && $pdo instanceof PDO) {
             try {
-                // normalize provider id string (e.g. "discord", "github")
+                // Get normalized provider info
                 $provider = strtolower($this->providerInstance->providername);
                 $provider_user_id = (string) $this->providerInstance->getID();
                 $username = (string) $this->providerInstance->getName();
@@ -250,12 +292,14 @@ class ProviderHandle
                 ]);
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+                // Insert or update user
                 if (!$user) {
                     // Insert new user
                     $insert = $pdo->prepare(
                         "INSERT INTO WP_Users (provider, provider_user_id, username, avatar)
                          VALUES (:provider, :pid, :username, :avatar)"
                     );
+                    // Execute insert
                     $insert->execute([
                         ':provider' => $provider,
                         ':pid' => $provider_user_id,
@@ -264,7 +308,7 @@ class ProviderHandle
                     ]);
                     $userId = $pdo->lastInsertId();
                 } else {
-                    // Update existing user (optional)
+                    // Update existing user
                     $userId = $user['id'];
                     $update = $pdo->prepare(
                         "UPDATE WP_Users SET username = :username, avatar = :avatar WHERE id = :id"
@@ -285,13 +329,16 @@ class ProviderHandle
                 $_SESSION['avatar'] = $avatar;
 
             } catch (Throwable $e) {
+                // Log error for debugging
                 error_log("Database error: " . $e->getMessage());
             }
         } else {
+            // Log error for debugging
             error_log("OAuth processToken: PDO \$pdo not available (dbconnect.php missing or failed).");
         }
     }
 
+    // Function: Add Provider to Handler
     public function addProvider($name, $cid, $secret)
     {
         $providerInfo = $this->getProviderData($name);
@@ -301,6 +348,7 @@ class ProviderHandle
         }
     }
 
+    // Function: Get Provider Data by Name
     public function getProviderData($name)
     {
         foreach (PROVIDERLIST as $provider) {
@@ -311,6 +359,7 @@ class ProviderHandle
         return null;
     }
 
+    // Function: Generate Login Text for All Providers
     public function generateLoginText()
     {
         $result = '';
@@ -320,16 +369,19 @@ class ProviderHandle
         return $result;
     }
 
+    // Function: Get Parameter from GET Request
     public function getGetParam($key, $default = null)
     {
         return array_key_exists($key, $_GET) ? $_GET[$key] : $default;
     }
 
+    // Function: Get Parameter from Session
     public function getSessionValue($key, $default = null)
     {
         return array_key_exists($key, $_SESSION) ? $_SESSION[$key] : $default;
     }
 
+    // Function: Set Parameter in Session
     public function setSessionValue($key, $value)
     {
         $_SESSION[$key] = $value;

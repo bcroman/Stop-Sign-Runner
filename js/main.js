@@ -47,11 +47,14 @@ var ground = defineNewStatic(0.1, 0, 0, (WIDTH / 2), HEIGHT - 15, (WIDTH / 2), 5
 var leftwall = defineNewStatic(1.0, 0.5, 0.2, 5, HEIGHT, 5, HEIGHT, "leftwall");
 var rightwall = defineNewStatic(1.0, 0.5, 0.2, WIDTH - 5, HEIGHT, 5, HEIGHT, "rightwall");
 
+// Car Manager
 var carManager = new CarManager();
 carManager.startSpawner();
 
+// Player Object
 var Player = new PlayerCharacter(150, 540, 2);
 
+// Renderer Object
 var renderer = new Renderer("b2dcan", images, world, { width: WIDTH, height: HEIGHT, scale: SCALE });
 
 /*
@@ -69,8 +72,9 @@ function update() {
     renderer.setShowDebug(showDebug);
     renderer.draw();
 
-    Player.jumpUpdate();
+    Player.jumpUpdate(); // Update Player Jump Frame
 
+    // Destroy marked objects
     for (var i in destroylist) {
         world.DestroyBody(destroylist[i]);
     }
@@ -89,7 +93,7 @@ animationFrameId = window.requestAnimationFrame(update);
 */
 var listener = new Box2D.Dynamics.b2ContactListener;
 listener.BeginContact = function (contact) {
-    //console.log("Begin Contact:" + contact.GetFixtureA().GetBody().GetUserData());
+    // Get user data of the contacting bodies
     var a = contact.GetFixtureA().GetBody().GetUserData();
     var b = contact.GetFixtureB().GetBody().GetUserData();
 
@@ -111,15 +115,14 @@ listener.BeginContact = function (contact) {
         // Update High Score Displays
         document.getElementById("highscoreDisplay").innerText = "High Score: " + highscore;
 
+        // Mark car for destruction
         if (a && a.id === "car") destroylist.push(contact.GetFixtureA().GetBody());
         if (b && b.id === "car") destroylist.push(contact.GetFixtureB().GetBody());
     }
 
-    // Hero touches car → Lose Game
-    // Car touches wall → delete car
+    // Player touches car → game over
     if ((a && a.id === "car" && b && b.id === "player") ||
         (b && b.id === "car" && a && a.id === "player")) {
-        //console.log("Game Over!");
         overScreen()
     }
 
@@ -151,10 +154,6 @@ Keyboard Controls
 $(document).keydown(function (e) {
     if ((e.keyCode == 87 || e.keyCode == 38 || e.keyCode == 32) && Player.onGround) {
         Player.jump();
-    }
-    if (e.keyCode === 68) { // D key
-        showDebug = !showDebug;
-        console.log("Debug mode:", showDebug ? "ON" : "OFF");
     }
 });
 
@@ -329,6 +328,7 @@ function startGame() {
 
 //Function: Update Game Score & Display Values
 function updateScore() {
+    // Increase Score by 5 for each car dodged
     score = score + 5;
     console.log("Score: " + score);
     document.getElementById("scoreDisplay").innerText = "Car Dodged: " + score;

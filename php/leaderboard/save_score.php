@@ -1,11 +1,8 @@
 <?php
+// Load Dependencies
 session_start();
 header('Content-Type: application/json');
-
-$dbFile = __DIR__ . '/../config/dbconnect.php';
-if (file_exists($dbFile)) {
-    require_once $dbFile;
-}
+require_once __DIR__ . '/../config/dbconnect.php';
 
 // Check login
 if (!isset($_SESSION['user_id'])) {
@@ -13,10 +10,11 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Parse incoming JSON
+// Parse incoming JSON Data From Gamme
 $data = json_decode(file_get_contents('php://input'), true);
 $score = intval($data['score'] ?? 0);
 
+// Check if score is valid and DB connected
 if ($score > 0 && isset($pdo) && $pdo instanceof PDO) {
     try {
         // Check if a score already exists for this user
@@ -24,6 +22,7 @@ if ($score > 0 && isset($pdo) && $pdo instanceof PDO) {
         $stmt->execute([':uid' => $_SESSION['user_id']]);
         $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        // Insert or update score
         if (!$existing) {
             // No record yet → insert new score
             $insert = $pdo->prepare("INSERT INTO WP_Scores (user_id, score) VALUES (:uid, :score)");
@@ -36,9 +35,11 @@ if ($score > 0 && isset($pdo) && $pdo instanceof PDO) {
 
         echo json_encode(['status' => 'success']);
     } catch (PDOException $e) {
+        // Log error for debugging
         error_log("DB update error: " . $e->getMessage());
         echo json_encode(['status' => 'error', 'message' => 'Database error']);
     }
 } else {
+    // Invalid score or DB not connected
     echo json_encode(['status' => 'error', 'message' => 'Invalid score or DB not connected']);
 }

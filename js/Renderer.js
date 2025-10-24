@@ -1,10 +1,13 @@
+// Class: Renderer to handle drawing the game state
 class Renderer {
     constructor(canvasId, images, world, options = {}) {
+        // Setup canvas and context
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext("2d");
         this.images = images;
         this.world = world;
 
+        // Configuration options
         this.WIDTH = options.width || 800;
         this.HEIGHT = options.height || 600;
         this.SCALE = options.scale || 30;
@@ -20,24 +23,27 @@ class Renderer {
         this.world.SetDebugDraw(this.debugDraw);
     }
 
+    // Function: Toggle debug drawing
     setShowDebug(flag) {
         this.showDebug = !!flag;
     }
 
+    // Function: Draw the current game state    
     draw() {
         const ctx = this.ctx;
         ctx.clearRect(0, 0, this.WIDTH, this.HEIGHT);
 
+        // Enable Debug mode
         if (this.showDebug) {
-            // Let Box2D draw shapes
             this.world.DrawDebugData();
             return;
         }
 
-        // Background
+        // Draw Background
         if (this.images.background && this.images.background.complete) {
             ctx.drawImage(this.images.background, 0, 0, this.WIDTH, this.HEIGHT);
         } else {
+            // Default sky blue background
             ctx.fillStyle = "#87ceeb";
             ctx.fillRect(0, 0, this.WIDTH, this.HEIGHT);
         }
@@ -52,6 +58,7 @@ class Renderer {
             const x = pos.x * this.SCALE;
             const y = pos.y * this.SCALE;
 
+            // Draw based on object ID
             switch (userData.id) {
                 case "player":
                     this.drawImageCentered(this.images.player, x, y, 100, 100, angle);
@@ -63,6 +70,7 @@ class Renderer {
         }
     }
 
+    // Function: Draw an image centered of the given position with rotation
     drawImageCentered(img, x, y, w, h, angle) {
         if (!img || !img.complete) return;
         const ctx = this.ctx;

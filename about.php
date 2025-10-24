@@ -9,6 +9,7 @@
 
 <body>
 
+    <!-- Nav Bar -->
     <ul>
         <li><a href="index.php">Home</a></li>
         <li><a href="game.php">Play Game</a></li>
@@ -18,10 +19,11 @@
 
     <h1>About Stop Sign Runner</h1>
 
+    <!-- About Content -->
     <div id="about-section">
         <p>Stop Sign Runner is a web browser game where the player runs on a endless platform trying to avoid moving
-            vehciles.</p>
-        <p>The goal is to highest score by lasting the longest without a hitting a object.</p>
+            cars.</p>
+        <p>The goal is to highest score by lasting the longest without a hitting a car.</p>
 
         <p>This game was created as part of an assignment for the module Web Programming.</p>
         <p>Created By Ben Collins 21006366</p>

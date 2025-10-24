@@ -7,16 +7,19 @@
     <title>Stop Sign Runner - Home</title>
 
     <?php
+    // Load Dependations
     require_once('php/Oauth/OAuth-Class.php');
     $config = require_once('php/config/secrets.php');
-    $handler = new ProviderHandle();
+    $handler = new ProviderHandle(); // Call OAuth Class
+    // Add Provider IDs and Keys
     $handler->addProvider('Discord', $config['Discord']['cid'], $config['Discord']['secret']);
     $handler->addProvider('GitHub', $config['GitHub']['cid'], $config['GitHub']['secret']);
-    $handler->performAction();
+    $handler->performAction(); // Run Action
     ?>
 </head>
 
 <body>
+    <!-- Nav Bar -->
     <ul>
         <li><a href="index.php">Home</a></li>
         <li><a href="game.php">Play Game</a></li>
@@ -28,7 +31,7 @@
 
     <div id="AccountDetails">
         <?php
-        if ($handler->status === 'logged in') { // Account Details
+        if ($handler->status === 'logged in') { // Load Account Details
             echo '<h2>Player Account</h2>';
             echo '<h3>' . htmlspecialchars($handler->providerInstance->getName(), ENT_QUOTES, 'UTF-8') . '</h3>';
             echo '<img src="' . htmlspecialchars($handler->providerInstance->getAvatar(), ENT_QUOTES, 'UTF-8') . '" alt="User Avatar" width="100">';
@@ -39,6 +42,7 @@
         ?>
     </div>
 
+    <!-- Load Game -->
     <p><a href="game.php" class="btn">Play Now</a></p>
 
     <section class="instructions">
@@ -47,7 +51,8 @@
     </section>
 
     <?php
-    if ($handler->status === 'logged in') { // Account Details
+    // Load Logout Button
+    if ($handler->status === 'logged in') {
         echo $handler->generateLogout();
     }
     ?>

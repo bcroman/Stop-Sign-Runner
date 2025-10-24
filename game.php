@@ -17,10 +17,11 @@ require_once('php/Oauth/check_auth.php'); // Auth Check Session
   <script src="./js/Player.js" defer></script>
   <script src="./js/Renderer.js" defer></script>
   <script src="./js/main.js" defer></script>
-  <title>Stop Sign Runner - Gane</title>
+  <title>Stop Sign Runner - Game</title>
 </head>
 
 <body>
+  <!-- Nav Bar -->
   <ul>
     <li><a href="index.php">Home</a></li>
     <li><a href="game.php">Play Game</a></li>
@@ -35,11 +36,13 @@ require_once('php/Oauth/check_auth.php'); // Auth Check Session
 
     <canvas id="b2dcan" width="800" height="600"></canvas>
 
+    <!-- Start Game Screen -->
     <div id="StartGameScreen">
       <h1>Stop Sign Runner</h1>
       <button id="startBtn">Start Game</button>
     </div>
 
+    <!-- Game Oveer Screen -->
     <div id="GameOverScreen">
       <h1>Game Over</h1>
       <p id="gameOverTxt"></p>
@@ -49,6 +52,7 @@ require_once('php/Oauth/check_auth.php'); // Auth Check Session
       <button id="leaderboardBtn">View Leaderboard</button>
     </div>
 
+    <!-- Display Current Scores -->
     <p id="scoreDisplay">Car Dodged: 0</p>
     <p id="highscoreDisplay">High Score: 0</p>
   </div>
